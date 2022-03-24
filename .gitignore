@@ -1,0 +1,14 @@
+/node_modules
+/build
+/dist
+/src/frontend/typings/api
+/src/server/typings/api
+
+package-lock.json
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+.idea
+*.iml
+*.key
