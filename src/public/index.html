@@ -348,7 +348,7 @@
     lunbo[0].parentNode.onchange = function (e) {
       //事件的冒泡
       for (var i = 0; i < lunbo.length; i++) {   //循环的作用是寻址第几张
-        if (e.target === lunbo[i]) {    //如果点击的是第i张等于第i张图的来源，那么久改变第i张图片
+        if (e.target === lunbo[i]) {    // e.target表示在事件冒泡中触发事件的源元素。如果点击的是第i张图等于触发事件的来源，那么就改变第i张图片
           changeLunbo(i);
           return;
         }
@@ -357,14 +357,14 @@
   })();
 
   (function () {
-    var xhr = new XMLHttpRequest();
+    var xhr = new XMLHttpRequest();    //提供了一个通过 URL 来获取数据的简单方式 
     xhr.responseType = "json";  //服务器返回来的类型自动转换成对象
     xhr.open("get", "/api/filmList");  //打开要发送的地址通道  向服务器发出一个HTTP请求，这里是HTTP请求是post
     xhr.send();  //.send()方法是用来发送post请求里面的body的，get方法直接.send（）
-    xhr.onreadystatechange = function () {
-      if (xhr.readyState === 4 && xhr.status === 200) {
+    xhr.onreadystatechange = function () {    // .onreadystatechange  当 readyState 属性改变时会调用它
+      if (xhr.readyState === 4 && xhr.status === 200) {  // 当 readyState 等于 4 且状态为 200 时，表示响应已就绪
         document.getElementById("reying").innerHTML = xhr.response
-          .map(function (obj) {    //数组的map方法
+          .map(function (obj) {    //ajax请求后台返回map类型
             return `
         <div>
           <div>

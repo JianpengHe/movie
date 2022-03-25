@@ -178,7 +178,7 @@
                                                 //  前端与服务器通信的API就是XMLHttpRequest
     var xhr = new XMLHttpRequest();        //  1.新建XMLHttpRequest对象
     xhr.open("POST", "/api/login");   //  2.打开要发送的地址通道  向服务器发出一个HTTP请求，这里是HTTP请求是post
-    xhr.send(JSON.stringify(obj));    // 3.如果没有要发送的内容直接send（） ，在向 web 服务器发送数据时，数据必须是字符串。通过 JSON.stringify() 把js对象转换为字符串。
+    xhr.send(JSON.stringify(obj));    // 3.如果没有要发送的内容直接send（） ，在向 web 服务器发送数据时，数据必须是字符串。通过 JSON.stringify()方法把js对象转换为Json字符串
     xhr.onreadystatechange = function () {   //  等待服务端做出回应。这时需要监控XMLHttpRequest对象的状态变化，指定回调函数。
      if (xhr.readyState == 4 && xhr.status == 200) { // xhr.readyState：XMLHttpRequest对象的状态，等于4表示数据已接收完毕。 
         console.log(xhr.response);       //  xhr.status：服务器返回的状态码，等于200表示一切正常。
