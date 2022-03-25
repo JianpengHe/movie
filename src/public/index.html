@@ -326,29 +326,29 @@
 <script>
   (function () {
     var lunbo = document.getElementsByName("lunbo");
-    var lunboIndex = -1;
-    var timer;
-    var changeLunbo = function (i) {
-      clearTimeout(timer);
+    var lunboIndex ;  //这是标记上一次播过的图片的序号
+    var timer;  //存储了一个定时器
+    var changeLunbo = function (i) {  //i是需要切换到哪张图
+      clearTimeout(timer);   //清除一个计时器
       i %= lunbo.length; //防止越界
-      var radio = lunbo[i];
-      if (i === lunboIndex) {
+      var radio = lunbo[i];  //具体某一张图存在radio变量里面
+      if (i === lunboIndex) {  //上一张图等于现在即将要切的图
         console.log(i, "已选择");
-        return;
+        return;     //返回为空
       }
-      lunboIndex = i;
-      radio.checked = true;
-      document.getElementById("lunbo").style.transform =
+      lunboIndex = i;  //把我要切的图片替换成上一次播放过得图片序号
+      radio.checked = true;   //让它处于选中的状态
+      document.getElementById("lunbo").style.transform =     //caa中加了过渡动画
         "translateX(" + i * -100 + "vw)";
       timer = setTimeout(function () {
-        changeLunbo(lunboIndex + 1);
+        changeLunbo(lunboIndex + 1);    //这里为什么+1是因为要向后翻一张
       }, 3000);
     };
-    changeLunbo(0);
+    changeLunbo(0);  //调用函数，上来第一张图
     lunbo[0].parentNode.onchange = function (e) {
       //事件的冒泡
-      for (var i = 0; i < lunbo.length; i++) {
-        if (e.target === lunbo[i]) {
+      for (var i = 0; i < lunbo.length; i++) {   //循环的作用是寻址第几张
+        if (e.target === lunbo[i]) {    //如果点击的是第i张等于第i张图的来源，那么久改变第i张图片
           changeLunbo(i);
           return;
         }
@@ -358,13 +358,13 @@
 
   (function () {
     var xhr = new XMLHttpRequest();
-    xhr.responseType = "json";
-    xhr.open("get", "/api/filmList");
-    xhr.send();
+    xhr.responseType = "json";  //服务器返回来的类型自动转换成对象
+    xhr.open("get", "/api/filmList");  //打开要发送的地址通道  向服务器发出一个HTTP请求，这里是HTTP请求是post
+    xhr.send();  //.send()方法是用来发送post请求里面的body的，get方法直接.send（）
     xhr.onreadystatechange = function () {
       if (xhr.readyState === 4 && xhr.status === 200) {
         document.getElementById("reying").innerHTML = xhr.response
-          .map(function (obj) {
+          .map(function (obj) {    //数组的map方法
             return `
         <div>
           <div>
