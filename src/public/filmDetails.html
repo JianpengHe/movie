@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="screen-orientation" content="portrait" />
+  <meta name="x5-orientation" content="portrait" />
+  <meta name="renderer" content="webkit" />
+  <meta charset="utf-8" />
+  <title>首页</title>
+  <style>
+    body {
+      background-color: #eee;
+      margin: 0;
+      padding: 0;
+    }
+
+    .filminfo {
+      display: flex;
+      height: 180px;
+      justify-content: space-between;
+      align-items: center;
+      margin: 0 10px;
+      z-index: 100;
+      position: relative;
+    }
+
+    .poster img {
+      width: 84px;
+      height: 130px;
+    }
+
+    .details span {
+      font-size: 14px;
+      line-height: 30px;
+      color: #fff;
+    }
+
+    .details {
+      width: 100%;
+      margin: 0 10px;
+    }
+
+    .head {
+      display: flex;
+      margin-bottom: 20px;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    #name {
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      display: -webkit-box;
+      font-size: 20px;
+    }
+
+    #score {
+      color: orange;
+      font-size: 25px;
+      white-space: nowrap;
+    }
+
+    .filter {
+      filter: blur(10px);
+      height: 180px;
+      overflow: hidden;
+      z-index: -1;
+      transform: scale(1.3);
+      position: absolute;
+      z-index: 0;
+      opacity: 0.4;
+      top: 0;
+    }
+
+    .filter img {
+      max-width: 100vw;
+      transform: translateY(-50%)
+    }
+  </style>
+  <style>
+    .introduce {
+      margin: 0 10px;
+      -webkit-line-clamp: 6;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      display: -webkit-box;
+    }
+
+    .introduce p {
+      text-indent: 2em;
+    }
+
+    .buy {
+      position: fixed;
+      bottom: 10px;
+      text-align: center;
+      width: 100%;
+    }
+
+    .buy a {
+      background-color: #ff0000;
+      color: #fff;
+      height: 40px;
+      border-radius: 30px;
+      font-size: 16px;
+      width: 250px;
+      border: none;
+      text-decoration: none;
+      display: block;
+      line-height: 40px;
+      margin: auto;
+    }
+
+    #actor {
+      position: relative;
+      display: flex;
+      width: min-content;
+    }
+
+    #actor>div {
+      position: relative;
+      width: 84px;
+      text-align: center;
+      color: #666;
+      font-size: 14px;
+      margin: 20px 0;
+    }
+
+    #actor img {
+      width: 84px;
+      height: 130px;
+    }
+  </style>
+</head>
+
+<body>
+  <div style="background-color: #59549e;overflow: hidden;position: relative;">
+    <div class="filminfo">
+      <div class="poster">
+        <img id="img" src="" alt="" />
+      </div>
+      <div class="details">
+        <div class="head">
+          <span id="name"></span>
+          <span id="score"></span>
+        </div>
+        <div class="foot">
+          <span id="type"></span><br />
+          <span id="releaseTime"></span><span>上映 /</span> <span id="filmLong"></span><span>分钟</span>
+        </div>
+      </div>
+    </div>
+    <div class="filter">
+      <img id="img2">
+    </div>
+  </div>
+
+  <div class="introduce">
+    <h3>剧情简介</h3>
+    <p id="introduce">
+    </p>
+  </div>
+  <div style="overflow-x: auto;">
+    <div id="actor">
+    </div>
+  </div>
+
+  <div class="buy">
+    <a id="buy" href="cinemaSelect.html">购 票</a>
+  </div>
+</body>
+<script>
+  (function () {
+    document.getElementById("buy").href += location.search
+    var xhr = new XMLHttpRequest();    //提供了一个通过 URL 来获取数据的简单方式 
+    xhr.responseType = "json";  //服务器返回来的类型自动转换成对象
+    xhr.open("get", "/api/filmDetails" + location.search);  //打开要发送的地址通道  向服务器发出一个HTTP请求，这里是HTTP请求是post
+    xhr.send();  //.send()方法是用来发送post请求里面的body的，get方法直接.send（）
+    xhr.onreadystatechange = function () {    // .onreadystatechange  当 readyState 属性改变时会调用它
+      if (xhr.readyState === 4) {
+        if (xhr.status === 401) {
+          location.href = '/login.html'
+        }
+        if (xhr.status === 200) {
+          document.getElementById("name").innerHTML = xhr.response.fName
+          document.getElementById("score").innerHTML = xhr.response.score / 10 + "分"
+          document.getElementById("type").innerHTML = xhr.response.type
+          document.getElementById("releaseTime").innerHTML = xhr.response.releaseTime.substr(0, 10)
+          document.getElementById("filmLong").innerHTML = xhr.response.filmlong
+          document.getElementById("introduce").innerHTML = xhr.response.introduce
+          document.getElementById("img").src = xhr.response.fImage
+          document.getElementById("img2").src = xhr.response.fImage
+          document.getElementById("actor").innerHTML = xhr.response.actor.map(function (obj) {    //ajax请求后台返回map
+            return `
+              <div>
+          <img src="${obj.headimg}" alt="" /><span>${obj.name}</span>
+        </div>`;
+          })
+        }
+      }
+    };
+  })();
+</script>
+
+</html>

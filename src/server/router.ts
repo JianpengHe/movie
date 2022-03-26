@@ -61,6 +61,16 @@ koaRouter.get('/check', async ctx => {
 })
 
 koaRouter.get('/filmList', async ctx => {
-  const dbResult = await dosql('SELECT * FROM `film`', [])
+  const dbResult = await dosql('SELECT * FROM `film` limit 10', [])
   ctx.body = dbResult
+})
+
+koaRouter.get('/filmDetails', async ctx => {
+  const { fid } = ctx.query
+  const dbResult = await dosql(
+    'SELECT fName,score,filmlong,releaseTime,introduce,fImage,actor,type FROM `film` WHERE fid=?;',
+    [String(fid)]
+  )
+  ctx.body = dbResult[0]
+  ctx.body.actor = JSON.parse(ctx.body.actor)
 })

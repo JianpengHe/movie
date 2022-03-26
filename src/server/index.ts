@@ -13,12 +13,13 @@ export const koa = new Koa() //  引入Koa构造函数对象,创建服务器示�
     const username = ctx.cookies.get('username') //  cookie保存在浏览器客户端，存储已登录用户的凭证，可以让我们用同一个浏览器访问统一域名下的共享数据。Koa中获取Cookie的值方法ctx.cookies.get('xxx')
     const key = ctx.cookies.get('key')
     if (!username || !key) {
+      ctx.status = 401
       ctx.body = '请登录'
       return
     }
     if (key !== getKey(username)) {
       //  判断用户的cookie是否是按照我们算法生成的（是否我们给的），不是的话就请登录
-
+      ctx.status = 401
       ctx.body = '请登录'
       return
     }

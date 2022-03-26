@@ -222,12 +222,16 @@
         }
       }
       var xhr = new XMLHttpRequest();
-      xhr.open("POST", "/register");
+      xhr.open("POST", "/api/register");
       xhr.send(JSON.stringify(obj));
       xhr.onreadystatechange = function () {
         if (xhr.readyState == 4 && xhr.status==200) {      //当 readyState 等于 4 并且状态为 200 时，表示响应已就绪：
-          document.getElementById("form").innerHTML=xhr.responseText;                             
+                            
           console.log(xhr.response);
+          if(xhr.response==='注册成功'){
+            location.href="/login.html"
+          }
+          alert(xhr.response)
         }
       };
       return false;
