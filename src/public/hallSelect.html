@@ -8,7 +8,7 @@
     <meta name="x5-orientation" content="portrait" />
     <meta name="renderer" content="webkit" />
     <meta charset="utf-8" />
-    <title>影院选择</title>
+    <title>影厅选择</title>
     <style>
         body {
             background-color: #eee;
@@ -98,34 +98,41 @@
             border-bottom: 1px solid #f00;
         }
     </style>
-    <style>
-        #cinema {
+     <style>
+        #hall {
             padding: 5px;
             background-color: #f7f7f7;
         }
 
-        .cinema {
+        .hall {
             display: flex;
             justify-content: space-between;
             border-top: 1px solid rgba(0, 0, 0, 0.2);
             padding: 5px 5px 10px 5px;
+            align-items: center;
         }
 
-        .cinema h1 {
-            font-size: 16px;
+        .hall h1 {
+            font-size: 20px;
             font-weight: 400;
             margin: 2px 0;
         }
 
-        .cinema h3 {
+        .hall h2 {
+            font-size: 16px;
+            font-weight: 100;
+            margin: 2px 0;
+        }
+
+        .hall h3 {
             margin: 0;
             font-size: 12px;
             color: #666;
             font-weight: 100;
         }
 
-        .cinema span {
-            font-size: 12px;
+        .hall span {
+            font-size: 16px;
             color: #f00;
             width: 100%;
             display: block;
@@ -134,7 +141,7 @@
         }
 
 
-        .cinema a {
+        .hall a {
             border-radius: 30px;
             background-color: #f00;
             color: #fff;
@@ -145,40 +152,45 @@
             text-align: center;
             padding: 5px;
             width: 36px;
-
+margin: auto;
         }
     </style>
-</head>
+    </head>
+    <body>
 
-<body>
-    <div style="background-color: #59549e;overflow: hidden;position: relative;">
-
-        <div class="filminfo">
-            <div class="poster">
-                <img id="img" src="" alt="" />
+        <div style="background-color: #59549e;overflow: hidden;position: relative;">
+    
+            <div class="filminfo">
+                <div class="poster">
+                    <img id="img" src="" alt="" />
+                </div>
+    
+                <div class="details">
+                    <div class="head">
+                        <span id="name"></span>
+                        <span id="score"></span>
+                    </div>
+    
+                    <div class="foot">
+                        <span id="type"></span><br />
+                        <span id="releaseTime"></span><span>上映 /</span> <span id="filmLong"></span><span>分钟</span>
+                    </div>
+                </div>
             </div>
-
-            <div class="details">
-                <div class="head">
-                    <span id="name"></span>
-                    <span id="score"></span>
-                </div>
-
-                <div class="foot">
-                    <span id="type"></span><br />
-                    <span id="releaseTime"></span><span>上映 /</span> <span id="filmLong"></span><span>分钟</span>
-                </div>
+            <div class="filter">
+                <img id="img2">
             </div>
         </div>
-        <div class="filter">
-            <img id="img2">
+        <div id="selectDate"></div>
+        <div id="hall">
+
         </div>
-    </div>
-    <div id="selectDate"></div>
-    <div id="cinema"></div>
-</body>
-<script>
-    var price=0;
+    
+    </body>
+    <script>
+         var price=0;
+         var public=0; 
+         
     (function () {
         var xhr = new XMLHttpRequest();    //提供了一个通过 URL 来获取数据的简单方式 
         xhr.responseType = "json";  //服务器返回来的类型自动转换成对象
@@ -195,6 +207,7 @@
                     document.getElementById("type").innerHTML = xhr.response.type
                     document.getElementById("releaseTime").innerHTML = xhr.response.releaseTime.substr(0, 10)
                     document.getElementById("filmLong").innerHTML = xhr.response.filmlong
+                    public=xhr.response.filmlong
                     document.getElementById("img").src = xhr.response.fImage
                     document.getElementById("img2").src = xhr.response.fImage
                     ajax(document.getElementById("selectDate").getElementsByTagName("div")[0])
@@ -203,7 +216,6 @@
             }
         };
     })();
-
 
     (function () {
         var b = new Date()
@@ -227,10 +239,14 @@
 
     })(); 
 
-     var ajax = function (target) {
+    var time = function(a){
+    
+    return `${String(Math.floor(a/60)).padStart(2,"0")}:${String(a%60).padStart(2,"0")}`
+}
+    var ajax = function (target) {
             var xhr = new XMLHttpRequest();    //提供了一个通过 URL 来获取数据的简单方式 
             xhr.responseType = "json";  //服务器返回来的类型自动转换成对象
-            xhr.open("get", "/api/cinemaSelect" + location.search + "&date=" + target.dataset.date);  //打开要发送的地址通道  向服务器发出一个HTTP请求，这里是HTTP请求是post
+            xhr.open("get", "/api/hallSelect" + location.search + "&date=" + target.dataset.date);  //打开要发送的地址通道  向服务器发出一个HTTP请求，这里是HTTP请求是post
             xhr.send();  //.send()方法是用来发送post请求里面的body的，get方法直接.send（）
             xhr.onreadystatechange = function () {    // .onreadystatechange  当 readyState 属性改变时会调用它
                 if (xhr.readyState === 4) {
@@ -238,18 +254,21 @@
                         location.href = '/login.html'
                     }
                     if (xhr.status === 200) {
-                        document.getElementById("cinema").innerHTML = xhr.response
+                        document.getElementById("hall").innerHTML = xhr.response
                             .map(function (obj) {    //ajax请求后台返回map
-                                return ` <div class="cinema">
-            <div>
-                <h1>${obj.cName}</h1>
-                <h3>${obj.address}</h3>
+                                return `  <div class="hall">
+                <div>
+                    <h1>${time(obj.time)}</h1>
+                    <h3>${time(obj.time+public)}散场</h3>
+                </div>
+                <div>
+                    <h2>${obj.hName}</h2>
+                </div>
+                <div>
+                    <span>${obj.price*price/1000}元</span>
+                    <a href="hallSelect.html${location.search}&cid=${obj.cid}">购票</a>
+                </div>
             </div>
-            <div>
-                <span>${obj.minPrice*price/1000}元起</span>
-                <a href="hallSelect.html${location.search}&cid=${obj.cid}">购票</a>
-            </div>
-        </div>
       `;
                             })
                             .join("");
@@ -260,6 +279,5 @@
         }
 
 
-</script>
-
-</html>
+    </script>
+    </html>

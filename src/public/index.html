@@ -455,7 +455,7 @@
   })();
 
   (function () {
-    var xhr = new XMLHttpRequest();    //提供了一个通过 URL 来获取数据的简单方式 
+    var xhr = new XMLHttpRequest();    //提供了一个通过 URL 来获取数据的方式 
     xhr.responseType = "json";  //服务器返回来的类型自动转换成对象
     xhr.open("get", "/api/filmList");  //打开要发送的地址通道  向服务器发出一个HTTP请求，这里是HTTP请求是post
     xhr.send();  //.send()方法是用来发送post请求里面的body的，get方法直接.send（）
@@ -479,7 +479,7 @@
               <b>${obj.score / 10}</b>
             </h1>
           </a>
-          <a class="buyBtn" href="#">购买</a>
+          <a class="buyBtn" href="#">购票</a>
         </div>`;
             })
             .join("");

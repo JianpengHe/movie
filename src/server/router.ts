@@ -68,9 +68,27 @@ koaRouter.get('/filmList', async ctx => {
 koaRouter.get('/filmDetails', async ctx => {
   const { fid } = ctx.query
   const dbResult = await dosql(
-    'SELECT fName,score,filmlong,releaseTime,introduce,fImage,actor,type FROM `film` WHERE fid=?;',
+    'SELECT fName,score,filmlong,releaseTime,price,introduce,fImage,actor,type FROM `film` WHERE fid=?;',
     [String(fid)]
   )
   ctx.body = dbResult[0]
-  ctx.body.actor = JSON.parse(ctx.body.actor)
+  ctx.body.actor = JSON.parse(ctx.body?.actor ?? '[]')
+})
+
+koaRouter.get('/cinemaSelect', async ctx => {
+  const { fid, date } = ctx.query
+  const result = await dosql(
+    `SELECT d.cid,cName,address,minPrice FROM (SELECT cid,min(price) as minPrice FROM (SELECT cid,price FROM (SELECT hid FROM play WHERE fid=? AND date=?)a INNER JOIN hall b on a.hid=b.hid)c GROUP by cid) d INNER JOIN cinema e on d.cid=e.cid;`,
+    [String(fid), String(date)]
+  )
+  ctx.body = result
+})
+
+koaRouter.get('/hallSelect', async ctx => {
+  const { fid, date, cid } = ctx.query
+  const result = await dosql(
+    `SELECT hName,price,time,pid FROM (SELECT hid,hName,price FROM hall WHERE cid=?) a INNER JOIN play b on a.hid =b.hid WHERE date=? and fid=?; `,
+    [String(cid), String(date), String(fid)]
+  )
+  ctx.body = result
 })
