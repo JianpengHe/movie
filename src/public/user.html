@@ -15,11 +15,13 @@
       padding: 0;
       background-color: rgb(248, 248, 248);
     }
-    #list{
+
+    #list {
       display: flex;
       flex-direction: column;
     }
-    .list{
+
+    .list {
       background-color: #fff;
       margin: 10px;
       padding: 15px;
@@ -27,42 +29,49 @@
       flex-direction: column;
       border-radius: 10px;
     }
-    .title{
+
+    .title {
       display: flex;
       justify-content: space-between;
       font-size: 14px;
       color: #555;
 
     }
-    .body{
+
+    .body {
       display: flex;
       margin: 10px 0;
     }
-    .body img{
+
+    .body img {
       display: block;
       width: 84px;
-            height: 130px;
+      height: 130px;
     }
-    .body>div{
+
+    .body>div {
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-    margin: 15px;
-    color: #555;
-    font-size: 14px;
-    line-height: 24px;
+      margin: 15px;
+      color: #555;
+      font-size: 14px;
+      line-height: 24px;
     }
-    .filmName{
+
+    .filmName {
       font-size: 18px;
       color: #000;
     }
-    hr{
+
+    hr {
       width: 100%;
-    border-bottom: none;
-    border-top: 1px solid rgba(50,50,50,0.5);
+      border-bottom: none;
+      border-top: 1px solid rgba(50, 50, 50, 0.5);
     }
-    .total{
-      text-align:right;
+
+    .total {
+      text-align: right;
       font-size: 14px;
     }
   </style>
@@ -70,38 +79,49 @@
 
 <body>
   <div id="list">
-    <div class="list">我的订单</div>
-    <div class="list">
+
+
+  </div>
+</body>
+<script>
+  var time = function (a) {
+
+    return `${String(Math.floor(a / 60)).padStart(2, "0")}:${String(a % 60).padStart(2, "0")}`
+  }
+  var Status = function (date1, time1, filmlong) {
+    var date = new Date(date1.substring(0, 10) + " " + time(time1) + ":00").getTime() / 1000;
+    var now = new Date().getTime() / 1000 //时间戳
+    if (now < date) { return "待放映" }
+    if (now < date + filmlong * 60) { return "正在放映" }
+    return "已完成"
+  }
+  var xhr = new XMLHttpRequest();    //提供了一个通过 URL 来获取数据的简单方式 
+  xhr.responseType = "json";  //服务器返回来的类型自动转换成对象
+  xhr.open("get", "/api/orderlist");  //打开要发送的地址通道  向服务器发出一个HTTP请求，这里是HTTP请求是post
+  xhr.send();  //.send()方法是用来发送post请求里面的body的，get方法直接.send（）
+  xhr.onreadystatechange = function () {    // .onreadystatechange  当 readyState 属性改变时会调用它
+    if (xhr.readyState === 4) {
+      if (xhr.status === 401) {
+        location.href = '/login.html'
+      }
+      if (xhr.status === 200) {
+        document.getElementById("list").innerHTML = `<div class="list">我的订单</div>` + xhr.response.map(function (obj) {
+          return `<div class="list">
       <div class="title">
-        <div>电影院</div>
-        <div>状态</div>
+        <div>${obj.cName}</div>
+        <div>${Status(obj.date, obj.time, obj.filmlong)}</div>
       </div>
       <div class="body">
-        <img />
+        <img src="${obj.fImage}" />
         <div>
-          <div class="filmName">某电影</div>
-          <div>9月4日 12:00<br />5号厅 6排8座</div>
+          <div class="filmName">${obj.fName}</div>
+          <div>${obj.date.substring(5, 10)} ${time(obj.time)}<br />${obj.hName} ${Math.floor(obj.seatid / 9) + 1}排${obj.seatid % 9 + 1}座</div>
         </div>
        
       </div>
       <hr />
-       <div class="total">总价：100元</div>
-    </div>
-  </div>
-</body>
-<script>
-
-  //  前端与服务器通信的API就是XMLHttpRequest
-  var xhr = new XMLHttpRequest();        //  1.新建XMLHttpRequest对象
-  xhr.open("POST", "/api/login");   //  2.打开要发送的地址通道  向服务器发出一个HTTP请求，这里是HTTP请求是post
-  // xhr.send(JSON.stringify(obj));    // 3.如果没有要发送的内容直接send（） ，在向 web 服务器发送数据时，数据必须是字符串。通过 JSON.stringify()方法把js对象转换为Json字符串
-  xhr.onreadystatechange = function () {   //  等待服务端做出回应。这时需要监控XMLHttpRequest对象的状态变化，指定回调函数。
-    if (xhr.readyState == 4 && xhr.status == 200) { // xhr.readyState：XMLHttpRequest对象的状态，等于4表示数据已接收完毕。 
-      console.log(xhr.response);       //  xhr.status：服务器返回的状态码，等于200表示一切正常。
-      if (xhr.response === "登录成功") {
-        location.href = "/"         // 如果登录成功跳转到首页
-      } else {
-        alert(xhr.response)    //  response(响应对象): 包含响应数据的具体操作
+       <div class="total">总价：${obj.price / 1000}元</div>
+    </div>`}).join("")
       }
     }
   };

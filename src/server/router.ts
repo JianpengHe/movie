@@ -121,8 +121,8 @@ koaRouter.post('/seatSelect', async ctx => {
 koaRouter.get('/orderlist', async ctx => {
   const userName = ctx.cookies.get('username')
   const dbresult = await dosql(
-    `SELECT capacity,oid	,seatid	,buyTime,date,time,fName,filmlong,d.price*c.price as price,hName FROM (SELECT oid,seatid	,buyTime,date,time,hid,fName,filmlong,price FROM (SELECT oid,seatid	,buyTime,fid,date,time,hid FROM orderlist f INNER JOIN play e on f.pid=e.pid WHERE userName=?) a INNER JOIN film b on a.fid=b.fid) c INNER JOIN hall d on c.hid=d.hid;`,
+    `SELECT oid	,seatid	,buyTime,date,time,fName,filmlong,d.price*c.price as price,hName,fImage,getCinemaName(cid) as cName FROM (SELECT oid,seatid	,buyTime,date,time,hid,fName,filmlong,price,fImage FROM (SELECT oid,seatid,buyTime,fid,date,time,hid FROM orderlist f INNER JOIN play e on f.pid=e.pid WHERE userName=?) a INNER JOIN film b on a.fid=b.fid) c INNER JOIN hall d on c.hid=d.hid;`,
     [String(userName)]
   )
-  ctx.body = dbresult[0] || {} // 如果 dbresult[0] 为空，就用空对象去代替
+  ctx.body = dbresult
 })
