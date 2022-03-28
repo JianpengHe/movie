@@ -13,11 +13,12 @@ connection.connect()
 /** 计算第一个入参的MD5并返回加密后字符串 */
 export const getKey = (username: string): string => crypto.createHash('md5').update(username).digest('hex')
 /** 第一个参数带占位符的sql语句，第二个参数是代替占位符的数组，返回一个记录结果数组或者受影响的行数，记录结果数组是由key（字段）和value（数值）的对象（记录）构成数组 */
-export const dosql = (sql: string, item: (string | number)[]): Promise<any[] & OkPacket> => {
-  return new Promise(fn => {
+export const dosql = (sql: string, item: (string | number | any)[]): Promise<any[] & OkPacket> => {
+  return new Promise((fn, reject) => {
     connection.query(sql, item, (err, brr) => {
       if (err) {
-        console.error(err)
+        reject(err)
+        return
       }
       // 执行sql查询语句
       fn(brr)

@@ -71,7 +71,7 @@ koaRouter.get('/filmDetails', async ctx => {
     'SELECT fName,score,filmlong,releaseTime,price,introduce,fImage,actor,type FROM `film` WHERE fid=?;',
     [String(fid)]
   )
-  ctx.body = dbResult[0]
+  ctx.body = dbResult[0] || {}
   ctx.body.actor = JSON.parse(ctx.body?.actor ?? '[]')
 })
 
@@ -91,4 +91,38 @@ koaRouter.get('/hallSelect', async ctx => {
     [String(cid), String(date), String(fid)]
   )
   ctx.body = result
+})
+
+koaRouter.get('/seatSelect', async ctx => {
+  const { pid } = ctx.query
+  const dbresult = await dosql(
+    `SELECT capacity,date,time,fName,filmlong,d.price*c.price as price,hName FROM (SELECT date,time,hid,fName,filmlong,price FROM (SELECT fid,date,time,hid FROM play WHERE pid=?) a INNER JOIN film b on a.fid=b.fid) c INNER JOIN hall d on c.hid=d.hid;`,
+    [String(pid)]
+  )
+  ctx.body = dbresult[0] || {} // 如果 dbresult[0] 为空，就用空对象去代替
+  const dbresult2 = await dosql(`SELECT seatid FROM orderlist WHERE pid=?;`, [String(pid)])
+  ctx.body.seat = dbresult2.map(function (a) {
+    return a.seatid
+  })
+})
+
+koaRouter.post('/seatSelect', async ctx => {
+  const { pid } = ctx.query
+  const seat: number[] = await recvData(ctx)
+  const userName = ctx.cookies.get('username')
+  try {
+    await dosql('INSERT INTO `orderlist`( `pid`, `seatid`, `userName`) VALUES ?', [seat.map(a => [pid, a, userName])])
+    ctx.body = '购买成功'
+  } catch (e) {
+    ctx.body = '座位已被售出'
+  }
+})
+
+koaRouter.get('/orderlist', async ctx => {
+  const userName = ctx.cookies.get('username')
+  const dbresult = await dosql(
+    `SELECT capacity,oid	,seatid	,buyTime,date,time,fName,filmlong,d.price*c.price as price,hName FROM (SELECT oid,seatid	,buyTime,date,time,hid,fName,filmlong,price FROM (SELECT oid,seatid	,buyTime,fid,date,time,hid FROM orderlist f INNER JOIN play e on f.pid=e.pid WHERE userName=?) a INNER JOIN film b on a.fid=b.fid) c INNER JOIN hall d on c.hid=d.hid;`,
+    [String(userName)]
+  )
+  ctx.body = dbresult[0] || {} // 如果 dbresult[0] 为空，就用空对象去代替
 })
