@@ -207,7 +207,7 @@ margin: auto;
                     document.getElementById("type").innerHTML = xhr.response.type
                     document.getElementById("releaseTime").innerHTML = xhr.response.releaseTime.substr(0, 10)
                     document.getElementById("filmLong").innerHTML = xhr.response.filmlong
-                    public=xhr.response.filmlong
+                    public=xhr.response.filmlong      
                     document.getElementById("img").src = xhr.response.fImage
                     document.getElementById("img2").src = xhr.response.fImage
                     ajax(document.getElementById("selectDate").getElementsByTagName("div")[0])
@@ -218,12 +218,12 @@ margin: auto;
     })();
 
     (function () {
-        var b = new Date()
+        var b = new Date()     // 获取当前时间存到变量b里面
         for (var i = 0; i <= 3; i++) {
             // document.getElementById("selectDate").innerHTML += '<div class="'+(i===0?"select":"")+'">' + (b.getMonth() + 1) + '月' + b.getDate() + '日'+'</div>'
             document.getElementById("selectDate").innerHTML += `<div data-date="${b.getFullYear()}-${b.getMonth()+1}-${b.getDate()}" class="${i === 0 ? "select" : ""}">${b.getMonth() + 1}月${b.getDate()}日</div>`
-            b.setDate(b.getDate() + 1)
-        }
+            b.setDate(b.getDate() + 1)    //js中获得指定日期前或后几天对应的日期 
+        }         //先获取当前的年月日，在此当天的日期基础上加一天，循环四次就获取了包括今天在内的四天日期
         var div = [...document.getElementById("selectDate").getElementsByTagName("div")]
         var last = 0
         document.getElementById("selectDate").onclick = function (e) {
@@ -241,7 +241,7 @@ margin: auto;
 
     var time = function(a){
     
-    return `${String(Math.floor(a/60)).padStart(2,"0")}:${String(a%60).padStart(2,"0")}`
+    return `${String(Math.floor(a/60)).padStart(2,"0")}:${String(a%60).padStart(2,"0")}`  // Math.floor()这里是获得时间的整数部分，padStart（）中第一个参数2是用来指定字符串的最小长度，第二个参数是用来补全的时间的0字符
 }
     var ajax = function (target) {
             var xhr = new XMLHttpRequest();    //提供了一个通过 URL 来获取数据的简单方式 
@@ -259,7 +259,7 @@ margin: auto;
                                 return `  <div class="hall">
                 <div>
                     <h1>${time(obj.time)}</h1>
-                    <h3>${time(obj.time+public)}散场</h3>
+                    <h3>${time(obj.time+public)}散场</h3>   
                 </div>
                 <div>
                     <h2>${obj.hName}</h2>
@@ -271,7 +271,7 @@ margin: auto;
             </div>
       `;
                             })
-                            .join("");
+                            .join("");          // 这里散场时间是电影开始时间+电影时长（上面public变量里存了电影时长）
                     }
                 }
             }

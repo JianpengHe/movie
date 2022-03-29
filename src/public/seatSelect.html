@@ -190,59 +190,59 @@
         <div id="ticket"></div>
     </div>
     <div class="buy">
-        <a id="buy" href="#">购 票</a>
+        <a id="buy" href="#">确认选座</a>
     </div>
 </body>
 <script>
     (function () {
-        var canvas = document.getElementById("canvas");
-        var ctx = canvas.getContext("2d");
+        var canvas = document.getElementById("canvas");    // 新建画布，存到canvas变量里面
+        var ctx = canvas.getContext("2d");     // context 指定了你在画布上绘制的类型是2d。二维绘图
         ctx.ellipse(150, 50, 200, 49, 0, 0, Math.PI * 2);
-        ctx.stroke();
+        ctx.stroke();    // 绘制一条路径
     })();
 
-    var div = [...document.getElementById("seat").getElementsByTagName("div")]
+    var div = [...document.getElementById("seat").getElementsByTagName("div")]   
     var last = 0
     document.getElementById("seat").onclick = function (e) {
         var index = div.indexOf(e.target)    //事件源元素所在的索引位置（是一个数）
         if (index == -1) {              // index==-1的意思是如果没点到div子元素，就return掉 不往下执行
             return
         }
-        if (e.target.className === "bought") {
+        if (e.target.className === "bought") {    //如果源元素点击到的className是bought的，那么说明是已售出的座位，点击没反应。所以return掉
             return
         }
 
-        if (e.target.className === "selected") {
+        if (e.target.className === "selected") {   //如果源元素现在是选择状态，再点击变成不选择状态
             e.target.className = ""
         }
         else {
-            if (e.target.className === "") {
+            if (e.target.className === "") {       //如果源元素现在是不选择状态，再点击变成选择状态
                 e.target.className = "selected"
             }
         }
         var seaded = []
-        div.forEach(function (a, b, c) {
-            if (a.className === "selected") {
+        div.forEach(function (a, b, c) {       // 用forEach() 方法对div这数组的每个div元素执行一次提供的函数。
+            if (a.className === "selected") {           //  如果遍历到div的className是"selected" （已选了座位的），就把该座位对应的索引插入到seaded新数组的后面
                 seaded.push(b)
-            }
-
+            }    
+                     // forEach方法中的function回调有三个参数：第一个参数是遍历的数组内容，第二个参数是对应的数组索引，第三个参数是数组本身
         })
 
-        document.getElementById("ticket").innerHTML = seaded.map(function (i) {
+        document.getElementById("ticket").innerHTML = seaded.map(function (i) {   // map() 方法返回一个新数组，数组中的元素为原始数组元素调用函数处理后的值
 
             return ` <div class="ticket">
-                <div>${Math.floor((i / 9) + 1)}排${(i % 9) + 1}座<br />￥60.65</div>
+                <div>${Math.floor((i / 9) + 1)}排${(i % 9) + 1}座<br />￥60.65</div> 
                 <div data-delect=${i}>×</div>
             </div>`
         }).join("")
-    }
+    }                //i是当前位置对应的索引号，这里是用索引号来计算选择的几排几座
 
-    document.getElementById("ticket").onclick = function (e) {
-        var i = e.target.dataset.delect
-        if (i === undefined) {
+    document.getElementById("ticket").onclick = function (e) {   
+        var i = e.target.dataset.delect       //dataset 属性本身可以被读取源元素的删除键，但不能直接写入     
+        if (i === undefined) {               // 如果点击x，就把         否则就把源元素的父级显示改为不显示，就是点了x会消失，相对应上面的座位已选择的也会同步变为没选择样式。
             return
         }
-        e.target.parentNode.style.display = "none"
+        e.target.parentNode.style.display = "none"        
         div[i].className = ""
     }
     var time = function (a) { return `${String(Math.floor(a / 60)).padStart(2, "0")}:${String(a % 60).padStart(2, "0")}` }
@@ -259,10 +259,10 @@
                 var obj = xhr.response
                 document.getElementById("hall").innerHTML = obj.hName;
                 document.getElementById("filmName").innerHTML = obj.fName;
-                document.getElementById("filmInfo").innerHTML = `${obj.date.substring(5, 7)}月${obj.date.substring(8, 10)}日 ${time(obj.time)}-${time(obj.time + obj.filmlong)}`;
+                document.getElementById("filmInfo").innerHTML = `${obj.date.substring(5, 7)}月${obj.date.substring(8, 10)}日 ${time(obj.time)}-${time(obj.time + obj.filmlong)}`;    //substring() 方法用于提取字符串中介于两个指定下标之间的字符。
                 for (var i = 0; i < obj.capacity; i++) {
-                    document.getElementById("seat").innerHTML += `<div class="${obj.seat.indexOf(i) >= 0 ? "bought" : ""}"></div>`;
-                    if (i % 9 === 0) {
+                    document.getElementById("seat").innerHTML += `<div class="${obj.seat.indexOf(i) >= 0 ? "bought" : ""}"></div>`;   
+                    if (i % 9 === 0) {   
                         document.getElementById("seatNo").innerHTML += `<div>${i / 9 + 1}</div>`
                     }
                 }
@@ -274,12 +274,12 @@
     document.getElementById("buy").onclick = function () {
         var seaded = []
         div.forEach(function (a, b, c) {
-            if (a.className === "selected") {
+            if (a.className === "selected") {   //如果div当中有className为"selected"，就把所对应的索引号插入seaded数组里面
                 seaded.push(b)
             }
 
         })
-        if (seaded.length === 0) {
+        if (seaded.length === 0) {    //如果新的数组里的长度为0的话，说明没有插入新的索引，代表用户没选择座位，就提醒用户选择座位
             alert("至少选择一个座位");
             return;
         }
@@ -293,10 +293,10 @@
                 }
                 if (xhr.status === 200) {
                     alert(xhr.response)
-                    if (xhr.response === "购买成功") {
-                        location.href = "user.html"
+                    if (xhr.response === "购买成功") {     // 如果购买成功，跳转到订单页面
+                        location.href = "user.html"         
                     } else {
-                        location.reload()
+                        location.reload()      //否则页面重新加载
                     }
                 }
             }

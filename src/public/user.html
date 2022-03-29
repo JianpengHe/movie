@@ -79,8 +79,6 @@
 
 <body>
   <div id="list">
-
-
   </div>
 </body>
 <script>
@@ -90,7 +88,7 @@
   }
   var Status = function (date1, time1, filmlong) {
     var date = new Date(date1.substring(0, 10) + " " + time(time1) + ":00").getTime() / 1000;
-    var now = new Date().getTime() / 1000 //时间戳
+    var now = new Date().getTime() / 1000 //时间戳    new Date().getTime()得到的是毫秒数，当前时间要转换成秒除1000
     if (now < date) { return "待放映" }
     if (now < date + filmlong * 60) { return "正在放映" }
     return "已完成"

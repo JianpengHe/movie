@@ -56,6 +56,7 @@ koaRouter.post('/register', async ctx => {
     ctx.body = '注册成功'
   }
 })
+
 koaRouter.get('/check', async ctx => {
   ctx.body = '成功'
 })

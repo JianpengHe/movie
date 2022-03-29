@@ -206,13 +206,15 @@
 
 
     (function () {
-        var b = new Date()
-        for (var i = 0; i <= 3; i++) {
+        var b = new Date()       // 获取当前时间存到变量b里面
+        for (var i = 0; i <= 3; i++) {     
             // document.getElementById("selectDate").innerHTML += '<div class="'+(i===0?"select":"")+'">' + (b.getMonth() + 1) + '月' + b.getDate() + '日'+'</div>'
             document.getElementById("selectDate").innerHTML += `<div data-date="${b.getFullYear()}-${b.getMonth()+1}-${b.getDate()}" class="${i === 0 ? "select" : ""}">${b.getMonth() + 1}月${b.getDate()}日</div>`
-            b.setDate(b.getDate() + 1)
+            b.setDate(b.getDate() + 1)             //js中获得指定日期前或后几天对应的日期 
+                            //先获取当前的年月日，在此当天的日期基础上加一天，循环四次就获取了包括今天在内的四天日期
         }
-        var div = [...document.getElementById("selectDate").getElementsByTagName("div")]
+
+        var div = [...document.getElementById("selectDate").getElementsByTagName("div")]  //获取日期所在的div标签
         var last = 0
         document.getElementById("selectDate").onclick = function (e) {
             var index = div.indexOf(e.target)    //事件源元素所在的索引位置（是一个数）
@@ -220,7 +222,7 @@
                 return
             }
             e.target.className = "select"    //否则就把当前点中的子元素的className修改为select，就是选中的有下划线
-            div[last].className = ""
+            div[last].className = ""   // 把上一个选中的div classname改为没样式的
             last = index
             ajax(e.target)
         }
@@ -239,7 +241,7 @@
                     }
                     if (xhr.status === 200) {
                         document.getElementById("cinema").innerHTML = xhr.response
-                            .map(function (obj) {    //ajax请求后台返回map
+                            .map(function (obj) {    // map() 方法返回一个新数组，数组中的元素为原始数组元素调用函数处理后的值
                                 return ` <div class="cinema">
             <div>
                 <h1>${obj.cName}</h1>
