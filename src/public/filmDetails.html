@@ -76,7 +76,7 @@
     }
 
     .filter img {
-      max-width: 100vw;
+      min-width: 100vw;
       transform: translateY(-50%)
     }
   </style>
@@ -126,7 +126,7 @@
       text-align: center;
       color: #666;
       font-size: 14px;
-      margin: 20px 0;
+      margin: 20px 5px;
     }
 
     #actor img {
@@ -198,7 +198,7 @@
               <div>
           <img src="${obj.headimg}" alt="" /><span>${obj.name}</span>
         </div>`;
-          })
+          }).join("")
         }
       }
     };

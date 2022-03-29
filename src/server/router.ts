@@ -57,12 +57,8 @@ koaRouter.post('/register', async ctx => {
   }
 })
 
-koaRouter.get('/check', async ctx => {
-  ctx.body = '成功'
-})
-
 koaRouter.get('/filmList', async ctx => {
-  const dbResult = await dosql('SELECT * FROM `film` limit 10', [])
+  const dbResult = await dosql('SELECT fName,fid,score,releaseTime,fImage FROM `film` ORDER BY `film`.`score` DESC', [])
   ctx.body = dbResult
 })
 
@@ -126,4 +122,17 @@ koaRouter.get('/orderlist', async ctx => {
     [String(userName)]
   )
   ctx.body = dbresult
+})
+
+koaRouter.get('/List', async ctx => {
+  const dbResult = await dosql(`SELECT fName,fImage,actor,score,releaseTime FROM film ORDER BY film.score DESC `, [])
+  dbResult.forEach(function (_, i) {
+    dbResult[i].actor = JSON.parse(dbResult[i].actor)
+      .slice(0, 2)
+      .map(function (gkd) {
+        return gkd.name
+      })
+      .join('、')
+  })
+  ctx.body = dbResult
 })

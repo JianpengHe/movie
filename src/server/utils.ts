@@ -8,6 +8,7 @@ const connection = mysql.createConnection({
   user: 'root',
   password: 'usbw',
   database: 'movie',
+  dateStrings: true,
 })
 connection.connect()
 /** 计算第一个入参的MD5并返回加密后字符串 */

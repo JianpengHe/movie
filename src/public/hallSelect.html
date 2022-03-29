@@ -76,7 +76,7 @@
         }
 
         .filter img {
-            max-width: 100vw;
+            min-width: 100vw;
             transform: translateY(-50%)
         }
     </style>
@@ -228,7 +228,7 @@ margin: auto;
         var last = 0
         document.getElementById("selectDate").onclick = function (e) {
             var index = div.indexOf(e.target)    //事件源元素所在的索引位置（是一个数）
-            if (index == -1) {    // index==-1的意思是如果没点到div子元素，就return掉 不往下执行
+            if (index == -1) {       // index==-1的意思是如果没点到div子元素，就return掉 不往下执行
                 return
             }
             e.target.className = "select"    //否则就把当前点中的子元素的className修改为select，就是选中的有下划线
