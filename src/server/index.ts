@@ -3,6 +3,7 @@ import * as Koa from 'koa'
 import * as KoaStatic from 'koa-static'
 import { koaRouter } from './router'
 import { getKey } from './utils'
+import { koaRouterAdmin } from './routerAdmin'
 export const koa = new Koa() //  引入Koa构造函数对象,创建服务器示例对象
   .use(async (ctx, next) => {
     //  配置中间件koa.use（做什么） 参数说明：ctx(context)上下文对象，该对象类似于原生http中的req+res 。 context 对象就是从请求到响应过程中的一个描述对象
@@ -27,4 +28,14 @@ export const koa = new Koa() //  引入Koa构造函数对象,创建服务器示�
   })
   .use(koaRouter.routes()) // 将koaRouter注册到koa对象上面。koaRouter替你接管url和处理函数之间的映射，而不需要关心真实的访问路径如何
   .use(KoaStatic(path.join(__dirname, '../../src/public'))) //  引入配置中间件  __dirname为绝对路径  path.join()为拼接路径语法  设置Public文件为静态资源文件夹浏览器可以直接访问静态资源夹
+  .use(async (ctx, next) => {
+    const username = ctx.cookies.get('username')
+    if (username !== 'admin') {
+      ctx.status = 401
+      ctx.body = '请登录'
+      return
+    }
+    await next()
+  })
+  .use(koaRouterAdmin.routes())
   .listen(80) // 在端口80监听
