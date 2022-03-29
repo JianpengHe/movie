@@ -136,3 +136,9 @@ koaRouter.get('/List', async ctx => {
   })
   ctx.body = dbResult
 })
+
+koaRouter.get('/cinema', async ctx => {
+  const dbResult = await dosql(`SELECT cName,address,location FROM cinema `, [])
+
+  ctx.body = dbResult
+})
