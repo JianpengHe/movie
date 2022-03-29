@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="screen-orientation" content="portrait" />
+    <meta name="x5-orientation" content="portrait" />
+    <meta name="renderer" content="webkit" />
+    <meta charset="utf-8" />
+    <title>电影订票系统登录</title>
+    <style>
+        body {
+            margin: 0;
+            width: 100%;
+            text-align: center;
+            background-color: rgb(247, 247, 247);
+        }
+
+        canvas {
+            margin: auto;
+            display: block;
+            margin-top: 10px;
+            margin-bottom: -20px;
+        }
+
+        #seatNo {
+            /* border: 1px solid #888; */
+            background-color: #ddd;
+            width: 20px;
+            font-size: 14px;
+            color: #888;
+        }
+
+        #seatNo>div {
+            line-height: 32px;
+            text-align: center;
+        }
+
+        #seat {
+            margin-left: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            width: 318px;
+        }
+
+        #seat>div:nth-child(9n+5) {
+            margin-right: 35px;
+        }
+
+        #seat>div {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+            border: 1px solid #888;
+            margin: 5px;
+        }
+
+        .legend {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .legend>div {
+            margin: 10px;
+        }
+
+        .legend>div::before {
+            content: "√";
+            display: inline-flex;
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+            border: 1px solid #888;
+            margin: 5px;
+            background-color: #f00;
+            font-size: 14px;
+            line-height: 20px;
+            color: transparent;
+            justify-content: space-around;
+        }
+
+        .legend>div:first-child::before {
+            background-color: unset;
+        }
+
+        .legend>div:last-child::before {
+            background-color: #0BF16E;
+            color: #fff;
+
+        }
+
+        .selected::before {
+            content: "√";
+            color: #fff;
+        }
+
+        .selected {
+            background-color: #0BF16E;
+        }
+
+        .bought {
+            background-color: #f00;
+        }
+    </style>
+    <style>
+        .card {
+            width: 348px;
+            margin: 10px auto;
+            border-radius: 3px;
+            background-color: rgb(250, 250, 250);
+            box-shadow: 2px 2px 10px 1px rgba(60, 60, 60, 0.1);
+            padding: 1px;
+        }
+
+        .card h1 {
+            margin: 15px 20px 5px 20px;
+            font-size: 18px;
+            font-weight: 500;
+            text-align: left;
+        }
+
+        .card h4 {
+            margin: 0 20px 20px 20px;
+            font-size: 14px;
+            font-weight: 100;
+            text-align: left;
+        }
+
+        #ticket {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .ticket {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #E8E3E3;
+            margin: 10px;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .ticket>div:nth-child(2n) {
+            font-size: 24px;
+        }
+
+        .buy {
+            position: fixed;
+            bottom: 10px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .buy a {
+            background-color: #ff0000;
+            color: #fff;
+            height: 40px;
+            border-radius: 30px;
+            font-size: 16px;
+            width: 250px;
+            border: none;
+            text-decoration: none;
+            display: block;
+            line-height: 40px;
+            margin: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas width="300" height="25" id="canvas"></canvas>
+    <div id="hall"></div>
+    <div style="display: flex;width: 348px;margin: 20px auto;">
+        <div id="seatNo"></div>
+        <div id="seat"> </div>
+    </div>
+    <div class="legend">
+        <div>可选</div>
+        <div>已售</div>
+        <div>已选</div>
+    </div>
+    <div class="card">
+        <h1 id="filmName"></h1>
+        <h4 id="filmInfo"></h4>
+        <div id="ticket"></div>
+    </div>
+    <div class="buy">
+        <a id="buy" href="#">确认选座</a>
+    </div>
+</body>
+<script>
+    (function () {
+        var canvas = document.getElementById("canvas");    // 新建画布，存到canvas变量里面
+        var ctx = canvas.getContext("2d");     // context 指定了你在画布上绘制的类型是2d。二维绘图
+        ctx.ellipse(150, 50, 200, 49, 0, 0, Math.PI * 2);
+        ctx.stroke();    // 绘制一条路径
+    })();
+
+    var div = [...document.getElementById("seat").getElementsByTagName("div")]   
+    var last = 0
+    document.getElementById("seat").onclick = function (e) {
+        var index = div.indexOf(e.target)    //事件源元素所在的索引位置（是一个数）
+        if (index == -1) {              // index==-1的意思是如果没点到div子元素，就return掉 不往下执行
+            return
+        }
+        if (e.target.className === "bought") {    //如果源元素点击到的className是bought的，那么说明是已售出的座位，点击没反应。所以return掉
+            return
+        }
+
+        if (e.target.className === "selected") {   //如果源元素现在是选择状态，再点击变成不选择状态
+            e.target.className = ""
+        }
+        else {
+            if (e.target.className === "") {       //如果源元素现在是不选择状态，再点击变成选择状态
+                e.target.className = "selected"
+            }
+        }
+        var seaded = []
+        div.forEach(function (a, b, c) {       // 用forEach() 方法对div这数组的每个div元素执行一次提供的函数。
+            if (a.className === "selected") {           //  如果遍历到div的className是"selected" （已选了座位的），就把该座位对应的索引插入到seaded新数组的后面
+                seaded.push(b)
+            }    
+                     // forEach方法中的function回调有三个参数：第一个参数是遍历的数组内容，第二个参数是对应的数组索引，第三个参数是数组本身
+        })
+
+        document.getElementById("ticket").innerHTML = seaded.map(function (i) {   // map() 方法返回一个新数组，数组中的元素为原始数组元素调用函数处理后的值
+
+            return ` <div class="ticket">
+                <div>${Math.floor((i / 9) + 1)}排${(i % 9) + 1}座<br />￥60.65</div> 
+                <div data-delect=${i}>×</div>
+            </div>`
+        }).join("")
+    }                //i是当前位置对应的索引号，这里是用索引号来计算选择的几排几座
+
+    document.getElementById("ticket").onclick = function (e) {   
+        var i = e.target.dataset.delect       //dataset 属性本身可以被读取源元素的删除键，但不能直接写入     
+        if (i === undefined) {               // 如果点击x，就把         否则就把源元素的父级显示改为不显示，就是点了x会消失，相对应上面的座位已选择的也会同步变为没选择样式。
+            return
+        }
+        e.target.parentNode.style.display = "none"        
+        div[i].className = ""
+    }
+    var time = function (a) { return `${String(Math.floor(a / 60)).padStart(2, "0")}:${String(a % 60).padStart(2, "0")}` }
+    var xhr = new XMLHttpRequest();    //提供了一个通过 URL 来获取数据的简单方式 
+    xhr.responseType = "json";  //服务器返回来的类型自动转换成对象
+    xhr.open("get", "/api/seatSelect" + location.search);  //打开要发送的地址通道  向服务器发出一个HTTP请求，这里是HTTP请求是post
+    xhr.send();  //.send()方法是用来发送post请求里面的body的，get方法直接.send（）
+    xhr.onreadystatechange = function () {    // .onreadystatechange  当 readyState 属性改变时会调用它
+        if (xhr.readyState === 4) {
+            if (xhr.status === 401) {
+                location.href = '/login.html'
+            }
+            if (xhr.status === 200) {
+                var obj = xhr.response
+                document.getElementById("hall").innerHTML = obj.hName;
+                document.getElementById("filmName").innerHTML = obj.fName;
+                document.getElementById("filmInfo").innerHTML = `${obj.date.substring(5, 7)}月${obj.date.substring(8, 10)}日 ${time(obj.time)}-${time(obj.time + obj.filmlong)}`;    //substring() 方法用于提取字符串中介于两个指定下标之间的字符。
+                for (var i = 0; i < obj.capacity; i++) {
+                    document.getElementById("seat").innerHTML += `<div class="${obj.seat.indexOf(i) >= 0 ? "bought" : ""}"></div>`;   
+                    if (i % 9 === 0) {   
+                        document.getElementById("seatNo").innerHTML += `<div>${i / 9 + 1}</div>`
+                    }
+                }
+                div = [...document.getElementById("seat").getElementsByTagName("div")]
+            }
+        }
+    }
+
+    document.getElementById("buy").onclick = function () {
+        var seaded = []
+        div.forEach(function (a, b, c) {
+            if (a.className === "selected") {   //如果div当中有className为"selected"，就把所对应的索引号插入seaded数组里面
+                seaded.push(b)
+            }
+
+        })
+        if (seaded.length === 0) {    //如果新的数组里的长度为0的话，说明没有插入新的索引，代表用户没选择座位，就提醒用户选择座位
+            alert("至少选择一个座位");
+            return;
+        }
+        var xhr = new XMLHttpRequest();    //提供了一个通过 URL 来获取数据的简单方式 
+        xhr.open("post", "/api/seatSelect" + location.search);  //打开要发送的地址通道  向服务器发出一个HTTP请求，这里是HTTP请求是post
+        xhr.send(JSON.stringify(seaded));  //.send()方法是用来发送post请求里面的body的，get方法直接.send（）
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 401) {
+                    location.href = '/login.html'
+                }
+                if (xhr.status === 200) {
+                    alert(xhr.response)
+                    if (xhr.response === "购买成功") {     // 如果购买成功，跳转到订单页面
+                        location.href = "user.html"         
+                    } else {
+                        location.reload()      //否则页面重新加载
+                    }
+                }
+            }
+        }
+    }
+</script>
+
+</html>
