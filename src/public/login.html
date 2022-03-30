@@ -183,10 +183,10 @@
      if (xhr.readyState == 4 && xhr.status == 200) { // xhr.readyState：XMLHttpRequest对象的状态，等于4表示数据已接收完毕。 
         console.log(xhr.response);       //  xhr.status：服务器返回的状态码，等于200表示一切正常。
         if(xhr.response==="登录成功"){
-          if(document.getElementById("username").value==="admin"){
-            location.href="/admin.html"         // 如果登录成功跳转到首页
+          if(document.getElementById("username").value==="admin"){     //后台登录鉴权。如果以管理员身份登录则自动识别跳转至管理后台
+            location.href="/admin.html"         
           }else{
-             location.href="/"         // 如果登录成功跳转到首页
+             location.href="/"         // 如果用户身份登录成功则跳转到首页
           }
          
         }else{

@@ -179,7 +179,7 @@
     xhr.responseType = "json";  //服务器返回来的类型自动转换成对象
     xhr.open("get", "/api/filmDetails" + location.search);  //打开要发送的地址通道  向服务器发出一个HTTP请求，这里是HTTP请求是post
     xhr.send();  //.send()方法是用来发送post请求里面的body的，get方法直接.send（）
-    xhr.onreadystatechange = function () {    // .onreadystatechange  当 readyState 属性改变时会调用它
+    xhr.onreadystatechange = function () {    // .onreadystatechange  当 readyState 属性改变时会调用它，onreadystatechange 事件被触发 4 次（0 - 4）, 分别是： 0-1、1-2、2-3、3-4，对应着 readyState 的每个变化。
       if (xhr.readyState === 4) {
         if (xhr.status === 401) {
           location.href = '/login.html'
@@ -188,7 +188,7 @@
           document.getElementById("name").innerHTML = xhr.response.fName
           document.getElementById("score").innerHTML = xhr.response.score / 10 + "分"
           document.getElementById("type").innerHTML = xhr.response.type
-          document.getElementById("releaseTime").innerHTML = xhr.response.releaseTime.substr(0, 10)
+          document.getElementById("releaseTime").innerHTML = xhr.response.releaseTime.substr(0, 10)    // substr() 的参数指定的是子串的开始位置和长度。  substring() 方法用于提取字符串中介于两个指定下标之间的字符。
           document.getElementById("filmLong").innerHTML = xhr.response.filmlong
           document.getElementById("introduce").innerHTML = xhr.response.introduce
           document.getElementById("img").src = xhr.response.fImage
@@ -204,5 +204,4 @@
     };
   })();
 </script>
-
 </html>

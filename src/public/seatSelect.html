@@ -231,7 +231,7 @@
         document.getElementById("ticket").innerHTML = seaded.map(function (i) {   // map() 方法返回一个新数组，数组中的元素为原始数组元素调用函数处理后的值
 
             return ` <div class="ticket">
-                <div>${Math.floor((i / 9) + 1)}排${(i % 9) + 1}座<br />￥60.65</div> 
+                <div>${Math.floor((i / 9) + 1)}排${(i % 9) + 1}座<br />￥20.28</div> 
                 <div data-delect=${i}>×</div>
             </div>`
         }).join("")
@@ -245,7 +245,7 @@
         e.target.parentNode.style.display = "none"        
         div[i].className = ""
     }
-    var time = function (a) { return `${String(Math.floor(a / 60)).padStart(2, "0")}:${String(a % 60).padStart(2, "0")}` }
+    var time = function (a) { return `${String(Math.floor(a / 60)).padStart(2, "0")}:${String(a % 60).padStart(2, "0")}` }  //math.floor() 方法将数字向下舍入为最接近的整数，并返回结果。padStart()第一个参数用来指定字符串的最小长度，第二个参数是用来补全的字符串。不够则以零填充
     var xhr = new XMLHttpRequest();    //提供了一个通过 URL 来获取数据的简单方式 
     xhr.responseType = "json";  //服务器返回来的类型自动转换成对象
     xhr.open("get", "/api/seatSelect" + location.search);  //打开要发送的地址通道  向服务器发出一个HTTP请求，这里是HTTP请求是post

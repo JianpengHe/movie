@@ -223,13 +223,13 @@
       }
       var xhr = new XMLHttpRequest();
       xhr.open("POST", "/api/register");
-      xhr.send(JSON.stringify(obj));
+      xhr.send(JSON.stringify(obj));   
       xhr.onreadystatechange = function () {
         if (xhr.readyState == 4 && xhr.status==200) {      //当 readyState 等于 4 并且状态为 200 时，表示响应已就绪：
                             
           console.log(xhr.response);
           if(xhr.response==='注册成功'){
-            location.href="/login.html"
+            location.href="/login.html"    // 如果注册成功跳转到登录页
           }
           alert(xhr.response)
         }
