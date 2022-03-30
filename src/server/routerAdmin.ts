@@ -5,3 +5,6 @@ koaRouterAdmin.prefix('/admin_api') // koaRouter的所有路径都会自动被�
 koaRouterAdmin.get('/check', async ctx => {
   ctx.body = 'hello'
 })
+koaRouterAdmin.get('/filmList', async ctx => {
+  ctx.body = await dosql('SELECT * FROM `film`', [])
+})

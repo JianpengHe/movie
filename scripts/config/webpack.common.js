@@ -64,7 +64,7 @@ module.exports = {
       {
         test: /\.css$/,
         // 排除业务模块，其他模块都不采用css modules方式解析
-        exclude: /admin/,
+        // exclude: /admin/,
         use: ['style-loader', 'css-loader'],
       },
 
