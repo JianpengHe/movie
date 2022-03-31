@@ -10,54 +10,12 @@ import {
   BarChartOutlined,
   PoweroffOutlined,
 } from '@ant-design/icons' // 在前端定义枚举映射
-import styled from 'styled-components'
 import FilmList from './FilmList'
 import HallList from './HallList'
-import './app.css'
+import './app.less'
 import OrderList from './OrderList'
 import UserList from './UserList'
 const { Header, Sider, Content } = Layout
-const Div = styled.div`
-  .trigger {
-    padding: 0 24px;
-    font-size: 18px;
-    line-height: 64px;
-    cursor: pointer;
-    transition: color 0.3s;
-  }
-
-  .trigger:hover {
-    color: #1890ff;
-  }
-
-  .logo {
-    height: 32px;
-    margin: 16px;
-    background: rgba(255, 255, 255, 0.3);
-  }
-
-  .site-layout .site-layout-background {
-    background: #fff;
-  }
-  .ant-layout {
-    height: 100vh;
-  }
-  .title {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 24px 15px;
-    border-bottom: 2px solid rgb(240, 242, 245);
-  }
-  .context {
-    padding: 20px 24px 15px;
-  }
-  .space-between {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-  }
-`
 const menu: {
   name: string
   icon: React.ReactNode
@@ -94,67 +52,59 @@ export default () => {
   const [page, setPage] = React.useState('0')
 
   return (
-    <Div>
-      <Layout>
-        <Sider trigger={null} collapsible collapsed={collapsed}>
-          {' '}
-          {/*使用自定义触发器，可以设置 trigger={null} 来隐藏默认设定*/}
-          <div className="logo" />
-          <Menu theme="dark" mode="inline" onSelect={({ key }) => setPage(key)} defaultSelectedKeys={[page]}>
-            {menu.map(({ name, icon }, index) => (
-              <Menu.Item key={String(index)} icon={icon}>
-                {name}
-              </Menu.Item>
-            ))}
-          </Menu>
-        </Sider>
-        <Layout className="site-layout">
-          <Header className="site-layout-background" style={{ padding: 0 }}>
-            <Row justify="space-between">
-              {' '}
-              //栅格化系统基于 Flex 布局，允许子元素在父节点内的水平对齐方式
-              <Col span={8}>
-                {' '}
-                //通过 row 在水平方向建立一组 column（简写 col）。 你的内容应当放置于 col 内，并且，只有 col 可以作为
-                row 的直接元素。 栅格系统中的列是指 1 到 24 的值来表示其跨越的范围。例如，三个等宽的列可以使用{' '}
-                <Col span={8} /> 来创建。
-                {React.createElement(collapsed ? MenuUnfoldOutlined : MenuFoldOutlined, {
-                  className: 'trigger',
-                  onClick() {
-                    setCollapsed(!collapsed) //  鼠标点击触发器菜单栏展开（不是收起状态）
-                  },
-                })}
-              </Col>
-              <Col span={8} offset={8} style={{ textAlign: 'right', margin: '0 20px', fontSize: '18px' }}>
-                {' '}
-                //offset栅格左侧的间隔格数，间隔内不可以有栅格
-                <Space>
-                  {' '}
-                  //设置组件之间的间距。避免组件黏在一起，拉开一定距离，适合行内元素的水平间距
-                  <a>
-                    <UserOutlined />
-                    admin
-                  </a>
-                  <a>
-                    <PoweroffOutlined />
-                    退出登录
-                  </a>
-                </Space>
-              </Col>
-            </Row>
-          </Header>
-          <Content
-            className="site-layout-background"
-            style={{
-              margin: '24px 16px',
-              // padding: 24,
-              minHeight: 280,
-            }}
-          >
-            {menu[Number(page)].render}
-          </Content>
-        </Layout>
+    <Layout>
+      <Sider trigger={null} collapsible collapsed={collapsed}>
+        {/*使用自定义触发器，可以设置 trigger={null} 来隐藏默认设定*/}
+        <div className="logo" />
+        <Menu theme="dark" mode="inline" onSelect={({ key }) => setPage(key)} defaultSelectedKeys={[page]}>
+          {menu.map(({ name, icon }, index) => (
+            <Menu.Item key={String(index)} icon={icon}>
+              {name}
+            </Menu.Item>
+          ))}
+        </Menu>
+      </Sider>
+      <Layout className="site-layout">
+        <Header className="header">
+          <Row justify="space-between">
+            {/* 栅格化系统基于 Flex 布局，允许子元素在父节点内的水平对齐方式 */}
+            <Col span={8}>
+              {/* 通过 row 在水平方向建立一组 column（简写 col）。 你的内容应当放置于 col 内，并且，只有 col 可以作为
+                row 的直接元素。 栅格系统中的列是指 1 到 24 的值来表示其跨越的范围。例如，三个等宽的列可以使用来创建。 */}
+              <Col span={8} />
+              {React.createElement(collapsed ? MenuUnfoldOutlined : MenuFoldOutlined, {
+                className: 'trigger',
+                onClick() {
+                  setCollapsed(!collapsed) //  鼠标点击触发器菜单栏展开（不是收起状态）
+                },
+              })}
+            </Col>
+            <Col span={8} offset={8} style={{ textAlign: 'right', margin: '0 20px', fontSize: '18px' }}>
+              {/* //offset栅格左侧的间隔格数，间隔内不可以有栅格 */}
+              <Space>
+                {/* 设置组件之间的间距。避免组件黏在一起，拉开一定距离，适合行内元素的水平间距 */}
+                <a>
+                  <UserOutlined />
+                  admin
+                </a>
+                <a>
+                  <PoweroffOutlined />
+                  退出登录
+                </a>
+              </Space>
+            </Col>
+          </Row>
+        </Header>
+        <Content
+          style={{
+            padding: '24px 16px',
+            overflow: 'auto',
+            minHeight: 280,
+          }}
+        >
+          {menu[Number(page)].render}
+        </Content>
       </Layout>
-    </Div>
+    </Layout>
   )
 }

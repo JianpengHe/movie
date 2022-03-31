@@ -6,5 +6,14 @@ koaRouterAdmin.get('/check', async ctx => {
   ctx.body = 'hello'
 })
 koaRouterAdmin.get('/filmList', async ctx => {
-  ctx.body = await dosql('SELECT * FROM `film`', [])
+  ctx.body = (await dosql('SELECT * FROM `film` where isDel=0', [])) || []
+  ctx.body.forEach(({ actor }, index) => {
+    ctx.body[index].actor = JSON.parse(actor || '[]')
+  })
+})
+
+koaRouterAdmin.delete('/film', async ctx => {
+  const { fid } = ctx.query
+  const result = await dosql(`UPDATE film SET isDel = 1 WHERE fid = ?`, [String(fid)])
+  ctx.body = '操作成功'
 })
