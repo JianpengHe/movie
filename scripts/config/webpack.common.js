@@ -1,47 +1,9 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-//const CopyPlugin = require('copy-webpack-plugin')
+const CopyPlugin = require('copy-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const WebpackBar = require('webpackbar')
 const { PROJECT_PATH } = require('../constant')
-const isDevelopment = process.env.NODE_ENV === 'development'
-const isProduction = process.env.NODE_ENV === 'production'
-const getCssLoaders = () => {
-  const cssLoaders = [
-    isDevelopment ? 'style-loader' : MiniCssExtractPlugin.loader,
-    {
-      loader: 'css-loader',
-      options: {
-        modules: {
-          localIdentName: '[local]--[hash:base64:5]',
-        },
-        sourceMap: isDevelopment,
-      },
-    },
-  ]
-
-  // 开发环境一般用chrom不会有问题，防止开发环境下看样式有一堆前缀影响查看，因此只在生产环境使用
-  isProduction &&
-    cssLoaders.push({
-      loader: 'postcss-loader',
-      options: {
-        postcssOptions: {
-          plugins: [
-            isProduction && [
-              'postcss-preset-env',
-              {
-                autoprefixer: {
-                  grid: true,
-                },
-              },
-            ],
-          ],
-        },
-      },
-    })
-
-  return cssLoaders
-}
 
 module.exports = {
   entry: {
@@ -58,27 +20,11 @@ module.exports = {
 
       {
         test: /\.css$/,
-        exclude: /node_modules/,
-        use: [...getCssLoaders()],
+        use: [MiniCssExtractPlugin.loader, { loader: 'css-loader' }],
       },
-      {
-        test: /\.css$/,
-        // 排除业务模块，其他模块都不采用css modules方式解析
-        // exclude: /admin/,
-        use: ['style-loader', 'css-loader'],
-      },
-
       {
         test: /\.less$/,
-        use: [
-          ...getCssLoaders(),
-          {
-            loader: 'less-loader',
-            options: {
-              sourceMap: isDevelopment,
-            },
-          },
-        ],
+        use: [MiniCssExtractPlugin.loader, { loader: 'css-loader' }, { loader: 'less-loader' }],
       },
       {
         test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
@@ -104,6 +50,7 @@ module.exports = {
     extensions: ['.tsx', '.ts', '.js', '.json'],
   },
   plugins: [
+    new MiniCssExtractPlugin(),
     new HtmlWebpackPlugin({
       template: path.resolve(PROJECT_PATH, './src/public/admin.html'),
     }),
@@ -114,14 +61,14 @@ module.exports = {
     // new CopyPlugin({
     //   patterns: [
     //     {
-    //       context: "public",
-    //       from: "*",
-    //       to: path.resolve(PROJECT_PATH, "./dist/public"),
-    //       toType: "dir",
+    //       // context: 'public',
+    //       from: path.resolve(PROJECT_PATH, './public'),
+    //       to: path.resolve(PROJECT_PATH, '../dist/public'),
+    //       toType: 'dir',
     //       globOptions: {
     //         dot: true,
     //         gitignore: true,
-    //         ignore: ["**/index.html"], // **表示任意目录下
+    //         ignore: ['**/index.html'], // **表示任意目录下
     //       },
     //     },
     //   ],
