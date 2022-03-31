@@ -22,9 +22,7 @@ koaRouter.post('/login', async ctx => {
   if (dbResult.length === 0) {
     ctx.body = '用户名不存在'
     return
-  }
-  // console.log(ctx);
-  else if (dbResult[0].password !== password) {
+  } else if (dbResult[0].password !== password) {
     ctx.body = '密码错误'
   } else {
     const key = getKey(username) // 把username进行加密
@@ -63,13 +61,13 @@ koaRouter.get('/filmList', async ctx => {
 })
 
 koaRouter.get('/filmDetails', async ctx => {
-  const { fid } = ctx.query
+  const { fid } = ctx.query //  获得GET请求的方式有两种，一种是从request中获得，一种是一直从上下文中获得。获得的格式也有两种：query和querystring       query返回的是格式化好的参数对象
   const dbResult = await dosql(
     'SELECT fName,score,filmlong,releaseTime,price,introduce,fImage,actor,type FROM `film` WHERE fid=?;',
     [String(fid)]
   )
   ctx.body = dbResult[0] || {}
-  ctx.body.actor = JSON.parse(ctx.body?.actor ?? '[]')
+  ctx.body.actor = JSON.parse(ctx.body?.actor ?? '[]') /// JSON.parse（json字符串 -> json对象）JSON字符串转换为JSON对象
 })
 
 koaRouter.get('/cinemaSelect', async ctx => {
@@ -139,6 +137,5 @@ koaRouter.get('/List', async ctx => {
 
 koaRouter.get('/cinema', async ctx => {
   const dbResult = await dosql(`SELECT cName,address,location FROM cinema `, [])
-
   ctx.body = dbResult
 })
