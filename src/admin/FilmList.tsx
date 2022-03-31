@@ -6,6 +6,7 @@ import React, { useEffect } from 'react'
 const { Title } = Typography
 interface IProp {}
 const FilmList: React.FC<IProp> = () => {
+  //  React.FC提供了类型检查和自动完成的静态属性,简单来说，不知道用什么组件类型时，就用 React.FC
   const { run, data } = useRequest(axios.get, { manual: true })
   useEffect(() => {
     run('/admin_api/filmList')
@@ -28,10 +29,12 @@ const FilmList: React.FC<IProp> = () => {
     <>
       <div className="title">
         <Title level={5}>影讯信息管理</Title>
-        <Button type="primary">上架电影</Button>
+        <Button type="primary">上架电影</Button> {/*主按钮primary：用于主行动点，一个操作区域只能有一个主按钮。*/}
       </div>
       <div className="context">
         <Form layout="inline">
+          {' '}
+          {/*表单布局为inline*/}
           <div className="space-between" style={{ marginBottom: '24px' }}>
             <div>
               <Form.Item label="电影名称">
@@ -50,7 +53,7 @@ const FilmList: React.FC<IProp> = () => {
             </div>
           </div>
         </Form>
-        <Table dataSource={data?.data as any} columns={columns} scroll={{ x: 2300, y: 600 }} />;
+        <Table dataSource={(data as any)?.data} columns={columns} scroll={{ x: 2300, y: 600 }} />;
       </div>
     </>
   )
