@@ -49,7 +49,7 @@ const menu: {
 ]
 export default () => {
   const [collapsed, setCollapsed] = React.useState(false) // 改写成Hooks的写法。useState：组件状态管理的钩子      collapsed：管理组件的状态  setCollapsed：更新collapsed的方法，方法名不可更改！  false:初始的collapsed，可以是任意的数据类型,这里是布尔型
-  const [page, setPage] = React.useState('0')
+  const [page, setPage] = React.useState('0') // 声明一个新的叫做 “page” 的 state 变量,在这里，useState 就是一个 Hook
 
   return (
     <Layout>
