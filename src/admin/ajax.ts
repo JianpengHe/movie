@@ -17,7 +17,7 @@ export const ajax: {
     return body =>
       new Promise(resolve =>
         axios
-          .get(this.api + url + '?' + body)
+          .get(this.api + url + '?' + (body || ''))
           .then(({ data }) => resolve(data))
           .catch(this.Catch)
       )
@@ -26,7 +26,7 @@ export const ajax: {
     return body =>
       new Promise(resolve =>
         axios
-          .delete(this.api + url + '?' + body)
+          .delete(this.api + url + '?' + (body || ''))
           .then(({ data }) => resolve(data))
           .catch(this.Catch)
       )

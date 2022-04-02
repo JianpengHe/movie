@@ -10,7 +10,6 @@ interface IProp {
 const FilmForm: React.FC<IProp> = ({ filmInfo, setFilmInfo }) => {
   const [form] = Form.useForm()
   React.useEffect(() => {
-    console.log(filmInfo)
     if (filmInfo?.fid) {
       filmInfo.releaseTime = moment(filmInfo.releaseTime, 'YYYY-MM-DD hh-mm-ss')
       form.setFieldsValue(filmInfo)
