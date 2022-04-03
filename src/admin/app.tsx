@@ -55,7 +55,10 @@ export default () => {
     <Layout>
       <Sider trigger={null} collapsible collapsed={collapsed}>
         {/*使用自定义触发器，可以设置 trigger={null} 来隐藏默认设定*/}
-        <div className="logo" />
+        <div className="logo">
+          <span style={{ textAlign: 'center', margin: '0 30px', fontSize: '18px', color: 'white' }}>后台管理系统</span>
+        </div>
+
         <Menu theme="dark" mode="inline" onSelect={({ key }) => setPage(key)} defaultSelectedKeys={[page]}>
           {menu.map(({ name, icon }, index) => (
             <Menu.Item key={String(index)} icon={icon}>
@@ -79,7 +82,7 @@ export default () => {
                 },
               })}
             </Col>
-            <Col span={8} offset={8} style={{ textAlign: 'right', margin: '0 20px', fontSize: '18px' }}>
+            <Col span={8} offset={8} style={{ textAlign: 'right', margin: '0 20px', fontSize: '16px' }}>
               {/* //offset栅格左侧的间隔格数，间隔内不可以有栅格 */}
               <Space>
                 {/* 设置组件之间的间距。避免组件黏在一起，拉开一定距离，适合行内元素的水平间距 */}
