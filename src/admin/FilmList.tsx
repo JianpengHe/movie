@@ -67,6 +67,7 @@ const FilmList: React.FC<IProp> = () => {
       <Card
         title="影讯信息管理"
         extra={
+          // 额外的信息提示
           <Button icon={<PlusOutlined />} type="primary" onClick={() => setFilmInfo({})}>
             上架电影
           </Button>
