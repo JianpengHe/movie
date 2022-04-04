@@ -1,5 +1,5 @@
 import axios from 'axios'
-type IAjax<T> = (url: string) => (body?: T) => Promise<any>
+type IAjax<T> = (url: string) => (body?: T, other?: string) => Promise<any>
 
 export const ajax: {
   Catch: (e: any) => void
@@ -32,10 +32,10 @@ export const ajax: {
       )
   },
   post(url) {
-    return body =>
+    return (body, query) =>
       new Promise(resolve =>
         axios
-          .post(this.api + url, body)
+          .post(this.api + url + '?' + (query || ''), body)
           .then(({ data }) => resolve(data))
           .catch(this.Catch)
       )

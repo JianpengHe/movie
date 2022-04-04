@@ -22,16 +22,15 @@ const menu: {
   render: React.ReactNode //  对服务器下发的菜单数据进行转换,icon字段是React.ReactNode的类型  React.ReactNode是组件所有可能的返回值的集合(可以是 ReactElement, ReactFragment, string ，a number 或者一个数组 ReactNodes, 或者null,或者 undefined, 或者 boolean)
 }[] = [
   {
-    name: '放映厅排片',
-    icon: <VideoCameraOutlined />,
-    render: <HallList />,
-  },
-  {
     name: '影讯信息管理',
     icon: <UserOutlined />,
     render: <FilmList />,
   },
-
+  {
+    name: '放映厅排片',
+    icon: <VideoCameraOutlined />,
+    render: <HallList />,
+  },
   {
     name: '订单信息管理',
     icon: <SolutionOutlined />,
