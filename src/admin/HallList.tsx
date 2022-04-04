@@ -1,4 +1,4 @@
-import { Button, Card, DatePicker, Form, Input, message, Select } from 'antd'
+import { Button, Card, DatePicker, Select } from 'antd'
 import React from 'react'
 import { useRequest } from 'ahooks'
 import { ajax } from './ajax'
@@ -8,20 +8,22 @@ const colorList = ['magenta', 'red', 'orange', 'gold', 'lime', 'green', 'cyan', 
 const formatTime = (start: number) =>
   `${String(Math.floor(start / 60)).padStart(2, '0')}:${String(start % 60).padStart(2, '0')}`
 interface IProp {}
+type IPlay = { pid: number; fid: number; time: number; hid: number }
 const HallList: React.FC<IProp> = () => {
   const dateFormat = 'YYYY-MM-DD'
   const [selectedCid, setCid] = React.useState<number>(0)
   const [selectedDate, setDate] = React.useState<string>(moment().format(dateFormat))
+  const [playList, setPlayList] = React.useState<IPlay[]>([])
 
   const { data: hallInfo } = useRequest(ajax.get('/hall'), {
     onSuccess(res) {
       setCid((res[0] || {}).cid || 0)
     },
   })
-  const { run: getPlay, data: playList } = useRequest(ajax.get('/play'), {
+  const { run: getPlay } = useRequest(ajax.get('/play'), {
     manual: true,
     onSuccess(res) {
-      console.log(res)
+      setPlayList(res)
     },
   })
 
@@ -49,15 +51,27 @@ const HallList: React.FC<IProp> = () => {
       playMove.className = target.className
       const cardInfo: any = playMove.getElementsByClassName('info')[0] || {}
       style.cssText = target.style.cssText
+      style.left = '0'
       style.width = target.clientWidth + 'px'
       style.transform = `translate(${clientX - layerX}px, ${clientY - layerY}px)`
-      const playHallListInfo: { top: number; left: number; width: number; height: number }[] = [
+      const newPlay: IPlay = {
+        pid: Number(target.dataset.pid ?? Math.ceil(Math.random() * 100000 + 10000)),
+        fid: filmInfo.fid,
+        time: 0,
+        hid: 0,
+        // isNew: !target.dataset.pid,
+      }
+      if (target.dataset.pid) {
+        target.style.display = 'none'
+      }
+      const playHallListInfo: { top: number; left: number; width: number; height: number; hid: number }[] = [
         ...(document.getElementsByClassName('playHallList') as any),
-      ].map(({ offsetTop, offsetLeft, clientWidth, clientHeight }) => ({
+      ].map(({ offsetTop, offsetLeft, clientWidth, clientHeight, dataset }) => ({
         top: offsetTop,
         left: offsetLeft,
         width: clientWidth,
         height: clientHeight,
+        hid: Number(dataset.hid),
       }))
 
       window.onmousemove = e => {
@@ -65,21 +79,24 @@ const HallList: React.FC<IProp> = () => {
         let y = e.clientY - layerY
         cardInfo.style.display = 'none'
         cardInfo.innerHTML = ''
-        playHallListInfo.some(({ top, height, left, width }) => {
+        newPlay.hid = 0
+        playHallListInfo.some(({ top, height, left, width, hid }) => {
           if (y > top - height / 2 && y < top + height / 2) {
+            newPlay.hid = hid
             y = top
             // if (x > left && x < left + width) {
             const startTimeMins = Math.max(
               0,
               Math.min(Math.round((((x - left) / width) * 960) / 5) * 5, 960 - Math.ceil(filmInfo.filmlong / 5) * 5)
             )
-            console.log(startTimeMins)
             cardInfo.style.display = 'block'
             cardInfo.innerHTML = `${formatTime(startTimeMins + 480)}-${formatTime(
               startTimeMins + 480 + filmInfo.filmlong
             )}`
+            newPlay.time = 480 + startTimeMins
             x = left + (startTimeMins * width) / 960
             // }
+            // const needMove=playList.filter(({ pid,hid:oldHid }) =>hid===oldHid&& pid !== newPlay.pid)
             return true
           }
         })
@@ -89,9 +106,19 @@ const HallList: React.FC<IProp> = () => {
         window.onmousemove = null
         window.onmouseup = null
         style.display = 'none'
+        const newPlayList = playList.filter(({ pid }) => pid !== newPlay.pid)
+        console.log(newPlayList, playList)
+        if (newPlay.hid) {
+          newPlayList.push(newPlay)
+        }
+
+        setPlayList(newPlayList)
+        target.style.display = 'block'
+        console.log(newPlayList)
       }
     }
-  }, [filmList])
+  }, [filmList, playList])
+
   return (
     <div id="play">
       <Card title="放映厅排片">
@@ -157,58 +184,38 @@ const HallList: React.FC<IProp> = () => {
           </div>
         }
       >
-        <div className="playHallList">
-          <div
-            className={`ant-tag-${colorList[1]} filmCard`}
-            style={{ width: (120 / 960) * 100 + '%' }}
-            data-filmindex="1"
-          >
-            <div className="pid">
-              <div>56456</div>
-              <div>100mins</div>
+        {(((hallInfo || []).find(({ cid }) => cid === selectedCid) || {}).halls || []).map(
+          ({ capacity, hName, price, hid }) => (
+            <div className="playHallList" key={hid} data-hid={hid}>
+              <h1>
+                {hName}（容量：{capacity}人，票价浮动：{price * 10}%）
+              </h1>
+              {playList
+                .filter(({ hid: playHid }) => hid === playHid)
+                .map(({ pid, fid, time }, index) => {
+                  const filmInfo = filmList.find(({ fid: findFid }) => fid === findFid)
+                  return (
+                    <div
+                      key={index}
+                      className={`ant-tag-${colorList[filmInfo.rank]} filmCard`}
+                      style={{ width: (filmInfo.filmlong / 960) * 100 + '%', left: ((time - 480) * 100) / 960 + '%' }}
+                      data-filmindex={filmInfo.rank}
+                      data-pid={pid}
+                    >
+                      <div className="pid">
+                        <div>{pid > 10000 ? 'New' : pid}</div>
+                        <div>{filmInfo.filmlong}mins</div>
+                      </div>
+                      <div className="fName">{filmInfo.fName}</div>
+                      <div className="info">
+                        {formatTime(time)}-{formatTime(time + filmInfo.filmlong)}
+                      </div>
+                    </div>
+                  )
+                })}
             </div>
-            <div className="fName">jirg</div>
-            <div className="info">12:00-14:00</div>
-          </div>
-          <div
-            className={`ant-tag-${colorList[1]} filmCard`}
-            style={{ width: (120 / 960) * 100 + '%' }}
-            data-filmindex="1"
-          >
-            <div className="pid">
-              <div>56456</div>
-              <div>100mins</div>
-            </div>
-            <div className="fName">jirg</div>
-            <div className="info">12:00-14:00</div>
-          </div>
-        </div>
-        <div className="playHallList">
-          <div
-            className={`ant-tag-${colorList[1]} filmCard`}
-            style={{ width: (120 / 960) * 100 + '%' }}
-            data-filmindex="1"
-          >
-            <div className="pid">
-              <div>56456</div>
-              <div>100mins</div>
-            </div>
-            <div className="fName">jirg</div>
-            <div className="info">12:00-14:00</div>
-          </div>
-          <div
-            className={`ant-tag-${colorList[1]} filmCard`}
-            style={{ width: (120 / 960) * 100 + '%' }}
-            data-filmindex="1"
-          >
-            <div className="pid">
-              <div>56456</div>
-              <div>100mins</div>
-            </div>
-            <div className="fName">jirg</div>
-            <div className="info">12:00-14:00</div>
-          </div>
-        </div>
+          )
+        )}
       </Card>
       <div id="playMove" />
     </div>
