@@ -11,7 +11,14 @@ koaRouterAdmin.get('/filmList', async ctx => {
     ctx.body[index].actor = JSON.parse(actor || '[]')
   })
 })
-
+koaRouterAdmin.post('/film', async ctx => {
+  const { actor, fImage, fName, fid, introduce, price, releaseTime, score, totalBoxoffice, type } = await recvData(ctx)
+  await dosql(
+    `INSERT ignore INTO film(actor,fImage,fName,fid,introduce,price,releaseTime,score,totalBoxoffice,type) values(?,?,?,?,?,?,?,?,?,?) ON DUPLICATE KEY UPDATE actor=values(actor),fImage=values(fImage),fName=values(fName),fid=values(fid),introduce=values(introduce),price=values(price),releaseTime=values(releaseTime),score=values(score),totalBoxoffice=values(totalBoxoffice),type=values(type)`,
+    [JSON.stringify(actor || '[]'), fImage, fName, fid, introduce, price, releaseTime, score, totalBoxoffice, type]
+  )
+  ctx.body = '成功'
+})
 koaRouterAdmin.delete('/film', async ctx => {
   const { fid } = ctx.query
   const result = await dosql(`UPDATE film SET isDel = 1 WHERE fid = ?`, [String(fid)])
