@@ -7,9 +7,9 @@ import UserForm from './UserForm'
 interface IProp {}
 const UserList: React.FC<IProp> = () => {
   const [userInfo, setUserInfo] = React.useState<any>(undefined)
-  const { run, data } = useRequest(ajax.get('/user'), {
-    //useRequest 是一个超级强大，且生产完备的网络请求 Hooks，useRequest 接收了一个 ajax请求。并自动管理 data 、run 等数据。data:请求返回的数据。run:执行请求,会自动捕获异常,通过下面配置的onError函数获取异常报错。
-    manual: true, //手动请求。一般需要手动触发，比如添加用户，编辑信息，删除用户等等。 useRequest 只需要配置 manual = true ，即可阻止初始化执行。只有触发 run 时才会开始执行。
+  const { run, data, refresh } = useRequest(ajax.get('/user'), {
+    // useRequest 是一个超级强大，且生产完备的网络请求 Hooks，useRequest 接收了一个 ajax请求。并自动管理 data 、run 等数据。data:请求返回的数据。run:执行请求,会自动捕获异常,通过下面配置的onError函数获取异常报错。
+    manual: true, // 手动请求。一般需要手动触发，比如添加用户，编辑信息，删除用户等等。 useRequest 只需要配置 manual = true ，即可阻止初始化执行。只有触发 run 时才会开始执行。
     onError() {
       //  请求错误触发
       message.error('请求失败')
@@ -66,7 +66,15 @@ const UserList: React.FC<IProp> = () => {
           columns={[
             { title: '用户编号', dataIndex: 'id', key: 'id', align: 'center' },
             { title: '用户名', dataIndex: 'userName', key: 'userName', align: 'center' },
-            { title: '用户密码', dataIndex: 'password', key: 'password', align: 'center' },
+            {
+              title: '用户密码',
+              dataIndex: 'password',
+              key: 'password',
+              align: 'center',
+              render() {
+                return '******'
+              },
+            },
             { title: '用户性别', dataIndex: 'sex', key: 'sex', align: 'center' },
             {
               title: '用户邮箱',
@@ -87,7 +95,13 @@ const UserList: React.FC<IProp> = () => {
                     <Button type="primary" size="small" onClick={() => setUserInfo({ ...info })}>
                       编辑
                     </Button>
-                    <Popconfirm placement="topRight" title="是否确定删除" onConfirm={() => delect('id=' + id)}>
+                    <Popconfirm
+                      placement="topRight"
+                      title="是否确定删除"
+                      onConfirm={() => {
+                        // delect('id=' + id)
+                      }}
+                    >
                       <Button type="primary" danger size="small">
                         删除
                       </Button>
@@ -99,7 +113,7 @@ const UserList: React.FC<IProp> = () => {
           ]}
         />
       </Card>
-      <UserForm userInfo={userInfo} setUserInfo={setUserInfo} />
+      <UserForm userInfo={userInfo} setUserInfo={setUserInfo} refresh={refresh} />
     </>
   )
 }

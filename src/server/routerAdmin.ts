@@ -34,25 +34,29 @@ koaRouterAdmin.get('/user', async ctx => {
 koaRouterAdmin.post('/user', async ctx => {
   // 使用loaRouter的post方法去接收http请求并调用对应的函数。如router.('/path',async fn)或者router.post('/path',async fn)。
   type user = {
-    username: string
+    userName?: string
     password?: string
-    sex: string
-    email: string
+    sex?: string
+    email?: string
   }
   const post: user = await recvData(ctx) // post的类型就是user的类型，就是说赋值给post的话要以user的形式
-  const needUpdatePwd = Boolean(post.password)
+  if (!Boolean(post.userName)) {
+    ctx.body = '用户名不能为空'
+    return
+  }
+  const keys = ['userName', 'password', 'sex', 'email']
+  const needUpdateKey = keys.filter(key => Boolean(post[key]))
+
   const inser = await dosql(
-    'INSERT ignore INTO `account`(`userName`, `sex`, `email`' +
-      (needUpdatePwd ? ', `password`' : '') +
-      ') VALUES (?,?,?' +
-      (needUpdatePwd ? '?,' : '') +
-      ')',
-    [post.username, post.sex, post.email, post.password]
+    `INSERT ignore INTO account (${needUpdateKey.join(',')}) VALUES (${needUpdateKey
+      .map(a => '?')
+      .join(',')}) ON DUPLICATE KEY UPDATE ${needUpdateKey.map(key => `${key}=VALUES(${key})`).join(',')}`,
+    needUpdateKey.map(key => post[key])
   )
   if (inser.affectedRows === 0) {
     // 是数据库中的唯一索引限制了不能重复插入数据，所以可以用影响行数是否为0来判断是否插入成功，如果影响行数为0返回客户端注册失败。
-    ctx.body = '注册失败'
+    ctx.body = '失败'
   } else {
-    ctx.body = '注册成功'
+    ctx.body = '成功'
   }
 })

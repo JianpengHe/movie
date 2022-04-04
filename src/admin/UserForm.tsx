@@ -1,14 +1,15 @@
 import { useRequest } from 'ahooks'
 import moment from 'moment'
-import { Form, Input, Rate, Modal, DatePicker, InputNumber, Radio } from 'antd'
+import { Form, Input, Rate, Modal, DatePicker, InputNumber, Radio, message } from 'antd'
 import React from 'react'
 import { ajax } from './ajax'
 interface IProp {
   userInfo: any
   setUserInfo: React.Dispatch<any>
+  refresh: () => void
 }
 
-const UserForm: React.FC<IProp> = ({ userInfo, setUserInfo }) => {
+const UserForm: React.FC<IProp> = ({ userInfo, setUserInfo, refresh }) => {
   const [form] = Form.useForm()
   React.useEffect(() => {
     if (userInfo?.id) {
@@ -18,6 +19,19 @@ const UserForm: React.FC<IProp> = ({ userInfo, setUserInfo }) => {
     }
   }, [userInfo])
 
+  const { run } = useRequest(ajax.post('/user'), {
+    manual: true,
+    onSuccess(body) {
+      if (body === '成功') {
+        message.success('保存成功')
+        setUserInfo(null)
+        refresh()
+      } else {
+        message.error(body)
+      }
+    },
+  })
+
   return (
     <Modal
       title={`${userInfo?.id ? '编辑' : '添加'}用户`}
@@ -25,12 +39,12 @@ const UserForm: React.FC<IProp> = ({ userInfo, setUserInfo }) => {
       onCancel={() => setUserInfo(null)}
       onOk={() => form.submit()}
     >
-      <Form form={form} onFinish={obj => console.log(obj)}>
-        <Form.Item label="用户名" name="userName">
+      <Form form={form} onFinish={obj => run(obj)}>
+        <Form.Item label="用户名" name="userName" rules={[{ required: true }]}>
           <Input placeholder="请输入用户名" />
         </Form.Item>
         <Form.Item label="用户密码" name="password">
-          <Input placeholder={`${userInfo?.id ? '如果不填则不修改' : '请输入'}密码`} />
+          <Input.Password placeholder={`${userInfo?.id ? '如果不填则不修改' : '请输入'}密码`} />
         </Form.Item>
         <Form.Item label="性别" name="sex">
           <Radio.Group>
@@ -38,8 +52,8 @@ const UserForm: React.FC<IProp> = ({ userInfo, setUserInfo }) => {
             <Radio value="女">女</Radio>
           </Radio.Group>
         </Form.Item>
-        <Form.Item label="用户邮箱" name="email">
-          <Input placeholder="请输入邮箱" />
+        <Form.Item label="用户邮箱" name="email" rules={[{ type: 'email' }]}>
+          <Input type="email" placeholder="请输入邮箱" />
         </Form.Item>
       </Form>
     </Modal>
