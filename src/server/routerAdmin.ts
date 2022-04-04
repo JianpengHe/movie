@@ -103,3 +103,24 @@ koaRouterAdmin.get('/filmBoxofficeTop10', async ctx => {
       []
     )) || []
 })
+
+koaRouterAdmin.post('/play', async ctx => {
+  const { date, cid } = ctx.query
+  const list = await recvData(ctx)
+  const updateArr = list.filter(({ pid }) => pid > 0)
+  const insertArr = list.filter(({ pid }) => pid < 0)
+  await dosql('DELETE FROM play WHERE date=? and hid in (SELECT hid FROM `hall` WHERE cid=?)', [date, cid])
+  if (updateArr.length) {
+    await dosql(
+      `INSERT ignore INTO play (pid,fid,date,time,hid) VALUES ? ON DUPLICATE KEY UPDATE pid=VALUES(pid),fid=VALUES(fid),date=VALUES(date),time=VALUES(time),hid=VALUES(hid)`,
+      [updateArr.map(({ pid, fid, time, hid }) => [pid, fid, date, time, hid])]
+    )
+  }
+  if (insertArr.length) {
+    await dosql(`INSERT ignore INTO play (fid,date,time,hid) VALUES ? `, [
+      insertArr.map(({ fid, time, hid }) => [fid, date, time, hid]),
+    ])
+  }
+
+  ctx.body = '成功'
+})
