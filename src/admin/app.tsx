@@ -84,7 +84,7 @@ export default () => {
               })}
             </Col>
             <Col span={8} offset={8} style={{ textAlign: 'right', margin: '0 20px', fontSize: '16px' }}>
-              {/* //offset栅格左侧的间隔格数，间隔内不可以有栅格 */}
+              {/* offset栅格左侧的间隔格数，间隔内不可以有栅格 使用 offset 可以将列向右侧偏。例如，offset={8} 将元素向右侧偏移了8个列（column）的宽度。*/}
               <Space>
                 {/* 设置组件之间的间距。避免组件黏在一起，拉开一定距离，适合行内元素的水平间距 */}
                 <a>

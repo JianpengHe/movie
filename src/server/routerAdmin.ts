@@ -32,7 +32,7 @@ koaRouterAdmin.get('/user', async ctx => {
 })
 
 koaRouterAdmin.post('/user', async ctx => {
-  // 使用loaRouter的post方法去接收http请求并调用对应的函数。如router.('/path',async fn)或者router.post('/path',async fn)。
+  // 使用koaRouter的post方法去接收http请求并调用对应的函数。如router.('/path',async fn)或者router.post('/path',async fn)。
   type user = {
     userName?: string
     password?: string
@@ -41,12 +41,12 @@ koaRouterAdmin.post('/user', async ctx => {
   }
   const post: user = await recvData(ctx) // post的类型就是user的类型，就是说赋值给post的话要以user的形式
   if (!Boolean(post.userName)) {
+    //  如果用户输入的userName为空时，前端提示
     ctx.body = '用户名不能为空'
     return
   }
   const keys = ['userName', 'password', 'sex', 'email']
   const needUpdateKey = keys.filter(key => Boolean(post[key]))
-
   const inser = await dosql(
     `INSERT ignore INTO account (${needUpdateKey.join(',')}) VALUES (${needUpdateKey
       .map(a => '?')
@@ -78,12 +78,14 @@ koaRouterAdmin.get('/hall', async ctx => {
   }
   const cidHash = new Map<number, ICinema>()
   result.forEach(({ cid, cName, hid, hName, capacity, price }) => {
+    //  把返回的结果全部遍历一遍
     if (!cidHash.has(cid)) {
+      //  如果cidhash中有cid记录，则从cidhash中读取内容
       cidHash.set(cid, { cid, cName, halls: [] })
     }
-    cidHash.get(cid)?.halls.push({ hid, hName, capacity, price })
+    cidHash.get(cid)?.halls.push({ hid, hName, capacity, price }) // 否则往halls空数组最后添加内容
   })
-  ctx.body = [...cidHash.values()]
+  ctx.body = [...cidHash.values()] //  返回的结果是cidhash表里的值
 })
 
 koaRouterAdmin.get('/play', async ctx => {
