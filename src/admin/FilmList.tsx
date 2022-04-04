@@ -12,7 +12,7 @@ const FilmList: React.FC<IProp> = () => {
   const [url, setUrl] = React.useState('')
   const [filmInfo, setFilmInfo] = React.useState<any>(undefined)
 
-  const { run, data } = useRequest(ajax.get('/filmList'), {
+  const { run, data, refresh } = useRequest(ajax.get('/filmList'), {
     manual: true,
     onSuccess(obj) {
       setFilter(obj)
@@ -47,7 +47,6 @@ const FilmList: React.FC<IProp> = () => {
   ;[...new Set((filter || []).map(({ type }) => type.replace(/\s/g, '').split(',')).flat())].forEach((tag, index) =>
     colorMap.set(tag as string, colorList[index % colorList.length])
   )
-
   return (
     <>
       <Image
@@ -260,7 +259,7 @@ const FilmList: React.FC<IProp> = () => {
           scroll={{ x: 1500 }}
         />
       </Card>
-      <FilmForm filmInfo={filmInfo} setFilmInfo={setFilmInfo} />
+      <FilmForm filmInfo={filmInfo} setFilmInfo={setFilmInfo} refresh={refresh} />
     </>
   )
 }
