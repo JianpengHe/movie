@@ -55,11 +55,10 @@ const HallList: React.FC<IProp> = () => {
       style.width = target.clientWidth + 'px'
       style.transform = `translate(${clientX - layerX}px, ${clientY - layerY}px)`
       const newPlay: IPlay = {
-        pid: Number(target.dataset.pid ?? Math.ceil(Math.random() * 100000 + 10000)),
+        pid: Number(target.dataset.pid ?? -Math.ceil(Math.random() * 100000)),
         fid: filmInfo.fid,
         time: 0,
         hid: 0,
-        // isNew: !target.dataset.pid,
       }
       if (target.dataset.pid) {
         target.style.display = 'none'
@@ -203,7 +202,7 @@ const HallList: React.FC<IProp> = () => {
                       data-pid={pid}
                     >
                       <div className="pid">
-                        <div>{pid > 10000 ? 'New' : pid}</div>
+                        <div>{pid < 0 ? 'New' : pid}</div>
                         <div>{filmInfo.filmlong}mins</div>
                       </div>
                       <div className="fName">{filmInfo.fName}</div>
