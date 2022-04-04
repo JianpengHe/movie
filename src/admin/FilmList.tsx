@@ -3,7 +3,7 @@ import { Button, Card, Form, Input, Rate, Table, Tooltip, Typography, Image, Tag
 import { PlusOutlined, UserOutlined } from '@ant-design/icons'
 import React, { useEffect } from 'react'
 import { ajax } from './ajax'
-import './FilmList.less'
+
 import FilmForm from './FilmForm'
 interface IProp {}
 const FilmList: React.FC<IProp> = () => {

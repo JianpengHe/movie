@@ -1,0 +1,98 @@
+#filter {
+  margin-bottom: 24px;
+
+}
+
+#filter>div {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: flex-end;
+  margin-right: 20px;
+}
+
+.filmPool{
+  display: flex;
+  flex-wrap: wrap;
+}
+
+
+.filmPool>div{
+  margin: 10px;
+}
+.filmCard::before{
+  content: " ";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+  cursor: grab;
+}
+.filmCard {
+  position: relative;
+  top:0;
+  height: 60px;
+  border-radius: 5px;
+overflow: hidden;
+box-shadow: 0 0 10px 1px rgba(0,0,0,0.1);
+user-select:none;
+
+}
+// .filmCard:active{
+// cursor: grabbing;
+// }
+.filmCard .pid {
+  padding: 0 5px;
+  font-size: 12px;
+  line-height: 15px;
+  height: 15px;
+  display: flex;
+    justify-content: space-between;
+    opacity: 0.5;
+}
+
+.filmCard .fName {
+  padding: 0 5px;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  width: 100%;
+  font-size: 14px;
+  line-height: 30px;
+  height: 30px;
+}
+.filmCard .info {
+  padding: 0 5px;
+color: #000;
+  background-color: rgba(0,0,0,0.2);
+  width: 100%;
+  font-size: 12px;
+  line-height: 15px;
+  height: 15px; 
+}
+
+.playTime{
+  font-weight: 100;
+  font-size: 14px;
+}
+
+.playTime>div{
+  width: 100%;
+  text-align: center;
+  border-right: 1px solid rgba(50,50,50,0.2);
+}
+.playTime>div:first-child{
+ 
+  border-left:1px solid rgba(50,50,50,0.2);
+}
+
+#playMove{
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 100000;
+}
+.playHallList{
+  position: relative;
+  display: flex
+}

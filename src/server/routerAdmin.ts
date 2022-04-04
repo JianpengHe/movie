@@ -60,3 +60,44 @@ koaRouterAdmin.post('/user', async ctx => {
     ctx.body = '成功'
   }
 })
+
+koaRouterAdmin.get('/hall', async ctx => {
+  const result = await dosql(
+    `SELECT hall.cid,hName,hid,cName,capacity,price FROM hall INNER JOIN cinema on hall.cid=cinema.cid`,
+    []
+  )
+  type ICinema = {
+    cid: number
+    cName: string
+    halls: {
+      hid: number
+      hName: string
+      capacity: number
+      price: number
+    }[]
+  }
+  const cidHash = new Map<number, ICinema>()
+  result.forEach(({ cid, cName, hid, hName, capacity, price }) => {
+    if (!cidHash.has(cid)) {
+      cidHash.set(cid, { cid, cName, halls: [] })
+    }
+    cidHash.get(cid)?.halls.push({ hid, hName, capacity, price })
+  })
+  ctx.body = [...cidHash.values()]
+})
+
+koaRouterAdmin.get('/play', async ctx => {
+  const { cid, date } = ctx.query
+  ctx.body = await dosql(
+    'SELECT pid,fid,time,hid FROM `play` WHERE date=? and hid in (SELECT hid FROM `hall` WHERE cid=?)',
+    [date, cid]
+  )
+})
+
+koaRouterAdmin.get('/filmBoxofficeTop10', async ctx => {
+  ctx.body =
+    (await dosql(
+      'SELECT (@rowNum:=@rowNum+1) AS rank,fName,fid,score,filmlong,releaseTime,price,totalBoxoffice,fImage FROM `film` ,(SELECT (@rowNum :=-1) ) b ORDER BY `film`.`totalBoxoffice` DESC LIMIT 10',
+      []
+    )) || []
+})
