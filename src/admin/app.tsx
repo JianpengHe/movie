@@ -90,7 +90,7 @@ export default () => {
                   <UserOutlined />
                   admin
                 </a>
-                <a>
+                <a href="login.html">
                   <PoweroffOutlined />
                   退出登录
                 </a>

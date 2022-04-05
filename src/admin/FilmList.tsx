@@ -131,7 +131,7 @@ const FilmList: React.FC<IProp> = () => {
               align: 'center',
               defaultSortOrder: 'ascend',
               sorter: (a, b) => new Date(a.releaseTime).getTime() - new Date(b.releaseTime).getTime(),
-            },
+            }, //  sorter是写在columns中的一个配置，结果为一个回调函数
             {
               title: '时长',
               dataIndex: 'filmlong',

@@ -6,8 +6,8 @@ import { ajax } from './ajax'
 interface IProp {}
 const OrderList: React.FC<IProp> = () => {
   const { run, data } = useRequest(ajax.get('/order'), {
-    //useRequest 是一个超级强大，且生产完备的网络请求 Hooks，useRequest 接收了一个 ajax请求。并自动管理 data 、run 等数据。data:请求返回的数据。run:执行请求,会自动捕获异常,通过下面配置的onError函数获取异常报错。
-    manual: true, //手动请求。一般需要手动触发，比如添加用户，编辑信息，删除用户等等。 useRequest 只需要配置 manual = true ，即可阻止初始化执行。只有触发 run 时才会开始执行。
+    //  useRequest 是一个超级强大，且生产完备的网络请求 Hooks，useRequest 接收了一个 ajax请求。并自动管理 data 、run 等数据。data:请求返回的数据。run:执行请求,会自动捕获异常,通过下面配置的onError函数获取异常报错。
+    manual: true, //  手动请求。一般需要手动触发，比如添加用户，编辑信息，删除用户等等。 useRequest 只需要配置 manual = true ，即可阻止初始化执行。只有触发 run 时才会开始执行。
     onError() {
       //  请求错误触发
       message.error('请求失败')
