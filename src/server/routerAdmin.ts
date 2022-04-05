@@ -256,6 +256,15 @@ koaRouterAdmin.get('/autoPlay', async ctx => {
   // const halls = await dosql('SELECT hid,capacity,price FROM `hall` WHERE cid=?', [String(cid)])
 })
 
+koaRouterAdmin.get('/statistics', async ctx => {
+  ctx.body = {
+    cinema: (await dosql('SELECT COUNT(*) as count FROM `cinema`', []))[0].count,
+    account: (await dosql('SELECT COUNT(*) as count FROM `account`', []))[0].count,
+    film: (await dosql('SELECT COUNT(*) as count FROM `film`', []))[0].count,
+    orderlist: (await dosql('SELECT COUNT(*) as count FROM `orderlist`', []))[0].count,
+    play: (await dosql('SELECT COUNT(*) as count FROM `play`', []))[0].count,
+  }
+})
 // const autoPlay = (filmInfoList: IAutoFilmInfo[], freeTime: number, duration = 960) => {
 //   const result: IAutoFilmInfo[][] = []
 //   const sum: IAutoFilmInfo[] = []

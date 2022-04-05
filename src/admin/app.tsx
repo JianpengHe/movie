@@ -15,6 +15,7 @@ import HallList from './HallList'
 import './app.less'
 import OrderList from './OrderList'
 import UserList from './UserList'
+import Statistics from './Statistics'
 const { Header, Sider, Content } = Layout
 const menu: {
   name: string
@@ -44,19 +45,32 @@ const menu: {
   {
     name: '票房统计',
     icon: <BarChartOutlined />,
-    render: <OrderList />,
+    render: <Statistics />,
   },
 ]
 export default () => {
   const [collapsed, setCollapsed] = React.useState(false) // 改写成Hooks的写法。useState：组件状态管理的钩子      collapsed：管理组件的状态  setCollapsed：更新collapsed的方法，方法名不可更改！  false:初始的collapsed，可以是任意的数据类型,这里是布尔型
-  const [page, setPage] = React.useState('0') // 声明一个新的叫做 “page” 的 state 变量,在这里，useState 就是一个 Hook
+  const [page, setPage] = React.useState('4') // 声明一个新的叫做 “page” 的 state 变量,在这里，useState 就是一个 Hook
 
   return (
     <Layout>
       <Sider trigger={null} collapsible collapsed={collapsed}>
         {/*使用自定义触发器，可以设置 trigger={null} 来隐藏默认设定*/}
         <div className="logo">
-          <span style={{ textAlign: 'center', margin: '0 30px', fontSize: '18px', color: 'white' }}>后台管理系统</span>
+          <span
+            style={{
+              textAlign: 'center',
+              margin: '0 30px',
+              fontSize: '18px',
+              color: 'white',
+              overflow: 'hidden',
+              whiteSpace: 'nowrap',
+              transition: 'opacity 0.3s',
+              opacity: collapsed ? 0 : 1,
+            }}
+          >
+            后台管理系统
+          </span>
         </div>
 
         <Menu theme="dark" mode="inline" onSelect={({ key }) => setPage(key)} defaultSelectedKeys={[page]}>
@@ -82,7 +96,7 @@ export default () => {
                 },
               })}
             </Col>
-            <Col span={8} offset={8} style={{ textAlign: 'right', margin: '0 20px', fontSize: '16px' }}>
+            <Col span={8} offset={8} style={{ textAlign: 'right', margin: '0 20px', fontSize: '14px' }}>
               {/* offset栅格左侧的间隔格数，间隔内不可以有栅格 使用 offset 可以将列向右侧偏。例如，offset={8} 将元素向右侧偏移了8个列（column）的宽度。*/}
               <Space>
                 {/* 设置组件之间的间距。避免组件黏在一起，拉开一定距离，适合行内元素的水平间距 */}
