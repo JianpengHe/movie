@@ -50,6 +50,13 @@ const HallList: React.FC<IProp> = () => {
     },
   })
 
+  const { run: autoPlay } = useRequest(ajax.get('/autoPlay'), {
+    manual: true,
+    onSuccess(res) {
+      setPlayList(res)
+    },
+  })
+
   React.useEffect(() => {
     if (!selectedCid) {
       return
@@ -200,7 +207,9 @@ const HallList: React.FC<IProp> = () => {
             />
           </div>
           <div>
-            <Button type="primary">一键排期</Button>
+            <Button type="primary" onClick={() => autoPlay(`cid=${selectedCid}&date=${selectedDate}`)}>
+              一键排期
+            </Button>
           </div>
         </div>
         <div className="filmPool">

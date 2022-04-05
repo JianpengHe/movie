@@ -143,7 +143,7 @@ type IAutoFilmInfo = {
 }
 
 koaRouterAdmin.get('/autoPlay', async ctx => {
-  const { cid } = ctx.query
+  const { cid, date } = ctx.query
   const filmInfoList: IAutoFilmInfo[] = await dosql(
     'SELECT fid,filmlong,totalBoxoffice,datediff(now(),releaseTime) as releaseDays,price FROM `film` ORDER BY `film`.`totalBoxoffice` DESC LIMIT 10',
     []
@@ -159,48 +159,100 @@ koaRouterAdmin.get('/autoPlay', async ctx => {
   })
   const halls = await dosql('SELECT hid,capacity,price FROM `hall` WHERE cid=?', [String(cid)])
   // console.log(filmInfoList)
-  console.time('time')
-  const hallNum = 1 / halls.length
-  const qu5 = (num: number) => Math.ceil((num / 5) * 5)
-
-  const plans = halls.map(({ capacity }) =>
-    autoPlay(
-      filmInfoList.map(({ filmlong }) => qu5(filmlong + capacity / 2)),
-      qu5(960 + capacity / 2)
-    ).filter(plan => {
-      const total = plan.reduce((a, b) => a + b)
-      return !plan.some((times, index) => times / total > hallNum + ((filmInfoList[index] || {}).maxScale || 0))
-    })
-  )
-  const result: number[][][] = []
-  const hallIndexArr: number[][] = []
-  const dfs = (hallIndex: number) => {
-    if (hallIndex >= plans.length) {
-      const total = hallIndexArr.flat().reduce((a, b) => a + b) // 该计划总排片电影数量
-      if (
-        hallIndexArr[0].every((_, filmIndex) => {
-          const filmTotalScale = hallIndexArr.map(hallPlan => hallPlan[filmIndex]).reduce((a, b) => a + b) / total // 某部电影所有影厅的排片比例
-          return (
-            // @ts-ignore
-            filmTotalScale <= filmInfoList[filmIndex].maxScale && filmTotalScale >= filmInfoList[filmIndex].minScale
-          )
-        })
-      ) {
-        result.push([...hallIndexArr])
-      }
-      // console.log(hallIndexArr)
-    } else {
-      plans[hallIndex].forEach(plan => {
-        hallIndexArr[hallIndex] = plan
-        dfs(hallIndex + 1)
-      })
-    }
+  // console.time('time')
+  // const hallNum = 1 / halls.length
+  const qu5 = (num: number) => Math.ceil(num / 5) * 5
+  type IOutput = {
+    pid: number
+    fid: number
+    date: string
+    time: number
+    hid: number
   }
-  dfs(0)
 
-  console.log(result)
-  console.timeEnd('time')
-  ctx.body = '成功'
+  ctx.body = halls
+    .map(({ capacity, price, hid }) => {
+      let nowTime = 480
+      const output: IOutput[] = []
+      ;(
+        (
+          autoPlay(
+            filmInfoList.map(({ filmlong }) => qu5(filmlong + capacity / 2)),
+            qu5(960 + capacity / 2)
+          )
+            .filter(plan => {
+              const total = plan.reduce((a, b) => a + b)
+              return !plan.some(
+                (times, index) =>
+                  times / total > ((filmInfoList[index] || {}).maxScale || 0) ||
+                  times / total < ((filmInfoList[index] || {}).minScale || 0)
+              )
+              // return !plan.some((times, index) => times / total > hallNum + ((filmInfoList[index] || {}).maxScale || 0))
+            })
+            .map(plan => ({
+              plan,
+              total: plan.reduce((a, num, i) => a + num * filmInfoList[i].price * price * capacity, 0),
+            }))
+            .sort((a, b) => b.total - a.total)[0] || {}
+        ).plan || []
+      ).forEach((num, filmIndex) => {
+        while (num--) {
+          output.push({
+            pid: Math.floor(-Math.random() * 100000),
+            fid: filmInfoList[filmIndex].fid,
+            date: String(date),
+            time: 0,
+            hid,
+          })
+          nowTime += filmInfoList[filmIndex].filmlong + capacity / 2
+        }
+      })
+      let time = 960 - (nowTime - capacity / 2 - 480)
+      output.sort((a, b) => a.pid - b.pid)
+      nowTime = 480
+      output.forEach((obj, index) => {
+        obj.time = qu5(nowTime)
+        const jiange = time / (output.length - index)
+        const filmlong = filmInfoList.find(({ fid }) => fid === obj.fid)?.filmlong ?? 0
+        const realTime = obj.time + filmlong + capacity / 2
+        const endTime = Math.max(qu5(realTime), Math.floor((realTime + jiange) / 5) * 5)
+        time -= endTime - realTime
+        nowTime = endTime
+      })
+      return output
+    })
+    .flat()
+
+  // console.log(output)
+  // const result: number[][][] = []
+  // const hallIndexArr: number[][] = []
+  // const dfs = (hallIndex: number) => {
+  //   if (hallIndex >= plans.length) {
+  //     const total = hallIndexArr.flat().reduce((a, b) => a + b) // 该计划总排片电影数量
+  //     if (
+  //       hallIndexArr[0].every((_, filmIndex) => {
+  //         const filmTotalScale = hallIndexArr.map(hallPlan => hallPlan[filmIndex]).reduce((a, b) => a + b) / total // 某部电影所有影厅的排片比例
+  //         return (
+  //           // @ts-ignore
+  //           filmTotalScale <= filmInfoList[filmIndex].maxScale && filmTotalScale >= filmInfoList[filmIndex].minScale
+  //         )
+  //       })
+  //     ) {
+  //       result.push([...hallIndexArr])
+  //     }
+  //     // console.log(hallIndexArr)
+  //   } else {
+  //     plans[hallIndex].forEach(plan => {
+  //       hallIndexArr[hallIndex] = plan
+  //       dfs(hallIndex + 1)
+  //     })
+  //   }
+  // }
+  // dfs(0)
+
+  // console.log(result)
+  // console.timeEnd('time')
+  //  ctx.body = output
   // const halls = await dosql('SELECT hid,capacity,price FROM `hall` WHERE cid=?', [String(cid)])
 })
 
