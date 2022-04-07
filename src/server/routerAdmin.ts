@@ -11,6 +11,7 @@ koaRouterAdmin.get('/filmList', async ctx => {
     ctx.body[index].actor = JSON.parse(actor || '[]')
   })
 })
+
 koaRouterAdmin.post('/film', async ctx => {
   const { actor, fImage, fName, fid, introduce, price, releaseTime, score, totalBoxoffice, type } = await recvData(ctx)
   await dosql(
@@ -34,7 +35,7 @@ koaRouterAdmin.get('/order', async ctx => {
 })
 
 koaRouterAdmin.get('/user', async ctx => {
-  const result = await dosql(`SELECT id,userName,sex,email FROM account;`, [])
+  const result = await dosql(`SELECT id,userName,sex,email FROM account  where isDel=0;`, [])
   ctx.body = result
 })
 
@@ -66,6 +67,12 @@ koaRouterAdmin.post('/user', async ctx => {
   } else {
     ctx.body = '成功'
   }
+})
+
+koaRouterAdmin.delete('/user', async ctx => {
+  const { id } = ctx.query
+  const result = await dosql(`UPDATE account SET isDel = 1 WHERE id = ?`, [String(id)])
+  ctx.body = '操作成功'
 })
 
 koaRouterAdmin.get('/hall', async ctx => {
