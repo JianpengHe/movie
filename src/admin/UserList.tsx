@@ -19,6 +19,13 @@ const UserList: React.FC<IProp> = () => {
     },
   })
 
+  const { run: del } = useRequest(ajax.delete('/user'), {
+    manual: true,
+    onSuccess() {
+      run()
+    },
+  })
+
   const [filter, setFilter] = React.useState<any[]>([])
   React.useEffect(() => {
     //  useEffect用于处理组件中的effect，通常用于请求数据，事件处理，订阅等相关操作useEffect 就是一个 Effect Hook，给函数组件增加了操作副作用的能力。useEffect()有两个参数，第一个参数是要执行的函数，第二个参数是一个依赖项数组(根据需求第二个参数可选是否填写)，根据数组里的变量是否变化决定是否执行函数
@@ -35,31 +42,6 @@ const UserList: React.FC<IProp> = () => {
           </Button>
         }
       >
-        <Form
-          onFinish={({ id }) => {
-            setFilter(data.filter(({ id: oldName }) => oldName.indexOf(id) >= 0))
-          }}
-          onReset={() => setFilter(data)}
-          layout="inline"
-        >
-          <div className="space-between" style={{ marginBottom: '24px' }}>
-            <div>
-              <Form.Item label="用户编号" name="id">
-                <Input />
-              </Form.Item>
-            </div>
-            <div className="space-between" style={{ width: 'unset' }}>
-              <Form.Item>
-                <Button type="primary" htmlType="submit">
-                  搜索
-                </Button>
-              </Form.Item>
-              <Form.Item>
-                <Button htmlType="reset">重置</Button>
-              </Form.Item>
-            </div>
-          </div>
-        </Form>
         <Table
           rowKey="id"
           dataSource={data}
@@ -95,13 +77,7 @@ const UserList: React.FC<IProp> = () => {
                     <Button type="primary" size="small" onClick={() => setUserInfo({ ...info })}>
                       编辑
                     </Button>
-                    <Popconfirm
-                      placement="topRight"
-                      title="是否确定删除"
-                      onConfirm={() => {
-                        // delect('id=' + id)
-                      }}
-                    >
+                    <Popconfirm placement="topRight" title="是否删除该用户" onConfirm={() => del('id=' + id)}>
                       <Button type="primary" danger size="small">
                         删除
                       </Button>
